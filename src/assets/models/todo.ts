@@ -1,14 +1,16 @@
 export interface TodoItem {
-  id: number
+  id: string
   text: string
 }
 
 export interface TodoProps {
   todo: TodoItem
+  onDelete?: () => void
 }
 
 export interface ListTodoProps {
   todo: TodoItem[]
+  deleteTodo?: (id: string) => void
 }
 
 export interface FormTodoProps {

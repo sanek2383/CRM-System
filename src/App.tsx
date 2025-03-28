@@ -10,17 +10,21 @@ function App() {
 
   const addTodoHandler = (text: string) => {
     const newTodo: TodoItem = {
-      id: Date.now(),
+      id: new Date().toISOString(),
       text,
     }
     setTodo([...todo, newTodo])
+  }
+
+  const deleteTodoHandler = (id: string) => {
+    setTodo(todo.filter((item => item.id !==id)))
   }
 
   return (
     <>
       {/* <Todo /> */}
       <FormTodo addTodo={addTodoHandler} />
-      <ListTodo todo={todo} />
+      <ListTodo todo={todo} deleteTodo={deleteTodoHandler} />
     </>
   )
 }

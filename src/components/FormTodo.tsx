@@ -1,5 +1,6 @@
 import { useState, useRef } from "react"
 import { FormTodoProps } from "../assets/models/todo"
+// import styles from './FormTodo.css'
 
 const FormTodo: React.FC<FormTodoProps> = ({ addTodo }) => {
   const [text, setText] = useState("")
@@ -16,6 +17,11 @@ const FormTodo: React.FC<FormTodoProps> = ({ addTodo }) => {
       inputRef.current?.focus()
       return
     }
+    if (enteredText.length > 64) {
+      console.error("The text must be shorter than 64 characters.")
+      inputRef.current?.focus()
+      return
+    }
     addTodo(enteredText)
     setText("")
     inputRef.current?.focus()
@@ -27,6 +33,7 @@ const FormTodo: React.FC<FormTodoProps> = ({ addTodo }) => {
         placeholder="Task To Be Done"
         required
         minLength={3}
+        maxLength={64}
         value={text}
         onChange={(e) => setText(e.target.value)}
         ref={inputRef}
