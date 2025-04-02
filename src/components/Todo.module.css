@@ -29,3 +29,7 @@
 .deleteButton:hover {
   background-color: #ff5252;
 }
+
+.completedTodo {
+  text-decoration: line-through;
+}
