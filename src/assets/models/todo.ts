@@ -22,6 +22,7 @@ export interface FormTodoProps {
 
 export interface FilterTodoProps {
   setFilter: (filter:'all' | 'work' | 'done')=> void
+  filter: "all" | "work" | "done";
   allCount: number;
   workCount: number;
   doneCount: number;

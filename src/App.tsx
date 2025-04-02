@@ -7,7 +7,7 @@ import FilterTodo from "./components/FilterTodo"
 
 function App() {
   const [todo, setTodo] = useState<TodoItem[]>([])
-  const [filter, setFilter] = useState<'all' | 'work' | 'done' >('all')
+  const [filter, setFilter] = useState<"all" | "work" | "done">("all")
 
   const addTodoHandler = (text: string) => {
     const newTodo: TodoItem = {
@@ -32,19 +32,25 @@ function App() {
     )
   }
 
-  const workCount = todo.filter((item)=> !item.isCompleted).length
-  const doneCount = todo.filter((item)=> item.isCompleted).length
+  const workCount = todo.filter((item) => !item.isCompleted).length
+  const doneCount = todo.filter((item) => item.isCompleted).length
 
-  const filteredTodo = todo.filter((item) =>{
-    if(filter === 'work') return !item.isCompleted
-    if(filter === 'done') return item.isCompleted
+  const filteredTodo = todo.filter((item) => {
+    if (filter === "work") return !item.isCompleted
+    if (filter === "done") return item.isCompleted
     return true
   })
 
   return (
     <>
       <FormTodo addTodo={addTodoHandler} />
-      <FilterTodo setFilter={setFilter} allCount={todo.length} workCount={workCount} doneCount={doneCount} />
+      <FilterTodo
+        setFilter={setFilter}
+        filter={filter}
+        allCount={todo.length}
+        workCount={workCount}
+        doneCount={doneCount}
+      />
       <ListTodo
         todo={filteredTodo}
         deleteTodo={deleteTodoHandler}

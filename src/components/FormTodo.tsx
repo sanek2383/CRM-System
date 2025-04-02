@@ -1,6 +1,6 @@
 import { useState, useRef } from "react"
 import { FormTodoProps } from "../assets/models/todo"
-// import styles from './FormTodo.css'
+import styles from './FormTodo.module.css'
 
 const FormTodo: React.FC<FormTodoProps> = ({ addTodo }) => {
   const [text, setText] = useState("")
@@ -26,12 +26,13 @@ const FormTodo: React.FC<FormTodoProps> = ({ addTodo }) => {
     addTodo(enteredText)
     setText("")
     setError(null)
-    inputRef.current?.focus()
   }
 
   return (
+    <>
     <form onSubmit={onSubmitHandler}>
       <input
+      className={styles.input}
         placeholder="Task To Be Done"
         required
         value={text}
@@ -42,8 +43,9 @@ const FormTodo: React.FC<FormTodoProps> = ({ addTodo }) => {
         ref={inputRef}
       />
       <button type="submit">Add</button>
-      {error && <p style={{ color: "red" }}>{error}</p>}
     </form>
+      {error && <h2 style={{ color: "red" }}>{error}</h2>}
+    </>
   )
 }
 
