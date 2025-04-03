@@ -3,27 +3,39 @@
   align-items: center;
   padding: 10px 20px;
   margin: 15px 0;
-  font-size: 1.5rem;
-  border-radius: 5px;
-  border: 2px solid #555;
-  color: #112d49;
+  font-size: 1.2em;
   background-color: #fbfef9;
+  border-radius: 5px;
+  box-shadow: 3px 3px 3px grey;
   user-select: none;
 }
 
 .todoText {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   width: 100%;
   text-align: left;
+  gap: 10px;
 }
 
-
-.deleteButton {
+.deleteButton,
+.writingButton {
   background-color: #ff6b6b;
   color: white;
   border: none;
-  padding: 5px 10px;
-  border-radius: 3px;
+  padding: 5px 15px;
+  border-radius: 5px;
   cursor: pointer;
+  margin-left: 5px;
+}
+
+.writingButton{
+  background-color: #229bec;
+}
+
+button img {
+  width: 20px;
 }
 
 .deleteButton:hover {
@@ -33,3 +45,24 @@
 .completedTodo {
   text-decoration: line-through;
 }
+
+input[type="checkbox"] {
+  appearance: none;
+  height: 8px;
+  padding: 8px;
+  border: 1px solid #229bec;
+  border-radius: 50px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  margin: 0;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #229bec;
+  border-color: #229bec;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+}
+
+
+

@@ -1,41 +1,36 @@
 form {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 30px;
-  }
-  
- 
-  
-  button {
-    border-radius: 8px;
-    border: 1px solid transparent;
-    font-size: 1.5rem;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: #f3ebeb;
-    cursor: pointer;
-    transition: border-color 0.25s;
-  }
-  
-  button:hover {
-    background-color: rgb(207, 207, 182);
-  }
-  
-  input,
-  button {
-    padding: 20px 55px;
-    border: none;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+}
 
-  input {
-    width: 55%;
-    height: 30px;
-    font-size: 1.3rem;
-    border-bottom: 1px solid rgb(4, 4, 4);
-    background-color: #c1bbbb;
-  }
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 1.5rem;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #229bec;
+  color: beige;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
 
-  input:focus{
-    outline: none;
-  }
+
+input,
+button {
+  padding: 10px 55px;
+  border: none;
+}
+
+input {
+  height: 30px;
+  font-size: 1.3rem;
+  border-bottom: 1px solid rgb(4, 4, 4);
+  background-color: #c1bbbb;
+}
+
+input:focus {
+  outline: none;
+}

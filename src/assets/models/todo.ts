@@ -6,14 +6,24 @@ export interface TodoItem {
 
 export interface TodoProps {
   todo: TodoItem
-  onDelete?: () => void
+  onDelete: () => void
   checkTodo: (id: string) => void
+  editId: string | null
+  editText: string
+  setEditText: (text: string) => void
+  editTodo: (id: string) => void
+  saveEdit: (id: string) => void
 }
 
 export interface ListTodoProps {
   todo: TodoItem[]
-  deleteTodo?: (id: string) => void
+  deleteTodo: (id: string) => void
   checkTodo: (id: string) => void
+  editId: string | null
+  editText: string
+  setEditText: (text: string) => void
+  editTodo: (id: string) => void
+  saveEdit: (id: string) => void
 }
 
 export interface FormTodoProps {

@@ -33,7 +33,7 @@ const FormTodo: React.FC<FormTodoProps> = ({ addTodo }) => {
     <form onSubmit={onSubmitHandler}>
       <input
       className={styles.input}
-        placeholder="Task To Be Done"
+        placeholder="Task To Be Done..."
         required
         value={text}
         onChange={(e) => {
