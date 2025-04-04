@@ -1,5 +1,7 @@
 import { TodoProps } from "../assets/models/todo"
 import styles from "./Todo.module.css"
+import iconWriting from "../../public/icon-writing-1.png"
+import iconRecycleBin from "../../public/icon-recycle-bin.png"
 
 const Todo: React.FC<TodoProps> = ({
   todo,
@@ -39,7 +41,7 @@ const Todo: React.FC<TodoProps> = ({
 
       <button className={styles.writingButton}>
         <img
-          src="../../public/icon-writing-1.png"
+          src={iconWriting}
           alt="icon"
           onClick={() => editTodo(todo.id)}
         />
@@ -48,7 +50,7 @@ const Todo: React.FC<TodoProps> = ({
       {onDelete && (
         <button className={styles.deleteButton}>
           <img
-            src="../../public/icon-recycle-bin.png"
+            src={iconRecycleBin}
             alt="icon"
             onClick={onDelete}
           />
