@@ -10,6 +10,9 @@ const ListTodo: React.FC<ListTodoProps> = ({
   setEditText,
   editTodo,
   saveEdit,
+  cancelEdit,
+  editError,
+  setEditError
 }) => {
   return (
     <div>
@@ -25,6 +28,9 @@ const ListTodo: React.FC<ListTodoProps> = ({
           setEditText={setEditText}
           editTodo={editTodo}
           saveEdit={saveEdit}
+          cancelEdit={cancelEdit}
+          editError={editError}
+          setEditError={setEditError}
         />
       ))}
     </div>

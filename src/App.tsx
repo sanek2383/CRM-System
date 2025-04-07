@@ -10,6 +10,7 @@ function App() {
   const [filter, setFilter] = useState<"all" | "work" | "done">("all")
   const [editId, setEditId] = useState<string | null>(null)
   const [editText, setEditText] = useState<string>("")
+  const [editError, setEditError] = useState<string | null>(null)
 
   const addTodoHandler = (text: string) => {
     const newTodo: TodoItem = {
@@ -33,11 +34,32 @@ function App() {
   }
 
   const saveEditHandler = (id: string) => {
+    const trimmedText = editText.trim()
+
+    if (trimmedText.length <= 2) {
+      setEditError("Текст должен содержать больше 2 символов.")
+      return
+    }
+
+    if (trimmedText.length > 64) {
+      setEditError("Текст должен быть короче 64 символов.")
+      return
+    }
+
     setTodo(
-      todo.map((item) => (item.id === id ? { ...item, text: editText } : item))
+      todo.map((item) =>
+        item.id === id ? { ...item, text: trimmedText } : item
+      )
     )
     setEditId(null)
-    setEditText('')
+    setEditText("")
+    setEditError(null)
+  }
+
+  const cancelEdit = () => {
+    setEditId(null)
+    setEditText("")
+    setEditError(null)
   }
 
   const checkTodoHandler = (id: string) => {
@@ -78,6 +100,9 @@ function App() {
         setEditText={setEditText}
         editTodo={editTodoHandler}
         saveEdit={saveEditHandler}
+        cancelEdit={cancelEdit}
+        editError={editError}
+        setEditError={setEditError}
       />
     </>
   )

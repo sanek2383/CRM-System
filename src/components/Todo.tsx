@@ -12,8 +12,14 @@ const Todo: React.FC<TodoProps> = ({
   setEditText,
   editTodo,
   saveEdit,
+  cancelEdit,
+  editError,
+  setEditError,
 }) => {
+  const isEditing = editId === todo.id
+
   return (
+    <>
     <div className={styles.todo}>
       <div
         className={`${styles.todoText} ${
@@ -26,37 +32,66 @@ const Todo: React.FC<TodoProps> = ({
           checked={todo.isCompleted}
           onChange={() => checkTodo(todo.id)}
         />
-        {editId === todo.id ? (
+
+        {isEditing ? (
           <input
             type="text"
             value={editText}
-            onChange={(e) => setEditText(e.target.value)}
+            onChange={(e) => {
+              setEditText(e.target.value)
+              if (editError) setEditError(null)
+            }}
             onBlur={() => saveEdit(todo.id)}
             autoFocus
           />
         ) : (
-          <span onClick={() => editTodo(todo.id)}>{todo.text}</span>
+          <span>{todo.text}</span>
         )}
       </div>
 
-      <button className={styles.writingButton}>
-        <img
-          src={iconWriting}
-          alt="icon"
+      {isEditing ? (
+        <>
+          <button
+            className={styles.saveButton}
+            onClick={() => saveEdit(todo.id)}
+          >
+            Сохранить
+          </button>
+          <button
+            className={styles.cancelButton}
+            onClick={cancelEdit}
+          >
+            Отмена
+          </button>
+        </>
+      ) : (
+        <button
+          className={styles.writingButton}
           onClick={() => editTodo(todo.id)}
-        />
-      </button>
+        >
+          <img
+            src={iconWriting}
+            alt="Редактировать"
+          />
+        </button>
+      )}
 
       {onDelete && (
-        <button className={styles.deleteButton}>
+        <button
+          className={styles.deleteButton}
+          onClick={onDelete}
+        >
           <img
             src={iconRecycleBin}
-            alt="icon"
-            onClick={onDelete}
+            alt="Удалить"
           />
         </button>
       )}
     </div>
+    {isEditing && editError && (
+  <p style={{ color: "red", margin: "5px 0 0 0" }}>{editError}</p>
+)}
+    </>
   )
 }
 

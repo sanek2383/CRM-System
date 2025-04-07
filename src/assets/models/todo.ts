@@ -13,6 +13,9 @@ export interface TodoProps {
   setEditText: (text: string) => void
   editTodo: (id: string) => void
   saveEdit: (id: string) => void
+  cancelEdit: () => void
+  editError: string | null
+  setEditError: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 export interface ListTodoProps {
@@ -24,6 +27,9 @@ export interface ListTodoProps {
   setEditText: (text: string) => void
   editTodo: (id: string) => void
   saveEdit: (id: string) => void
+  cancelEdit: () => void
+  editError: string | null
+  setEditError: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 export interface FormTodoProps {
@@ -31,9 +37,9 @@ export interface FormTodoProps {
 }
 
 export interface FilterTodoProps {
-  setFilter: (filter:'all' | 'work' | 'done')=> void
-  filter: "all" | "work" | "done";
-  allCount: number;
-  workCount: number;
-  doneCount: number;
+  setFilter: (filter: "all" | "work" | "done") => void
+  filter: "all" | "work" | "done"
+  allCount: number
+  workCount: number
+  doneCount: number
 }

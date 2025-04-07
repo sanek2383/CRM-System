@@ -14,12 +14,12 @@ const FormTodo: React.FC<FormTodoProps> = ({ addTodo }) => {
     const enteredText = text.trim()
 
     if (enteredText.length <= 2) {
-      setError("Text should be longer than 2 characters")
+      setError("Текст должен содержать больше 2 символов.")
       inputRef.current?.focus()
       return
     }
     if (enteredText.length > 64) {
-      setError("The text must be shorter than 64 characters.")
+      setError("Текст должен быть короче 64 символов.")
       inputRef.current?.focus()
       return
     }
