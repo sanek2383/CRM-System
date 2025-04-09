@@ -41,7 +41,7 @@ const Todo: React.FC<TodoProps> = ({
               setEditText(e.target.value)
               if (editError) setEditError(null)
             }}
-            onBlur={() => saveEdit(todo.id)}
+            // onBlur={() => saveEdit(todo.id)}
             autoFocus
           />
         ) : (
