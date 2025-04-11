@@ -1,39 +1,63 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import FormTodo from "./components/FormTodo"
 import ListTodo from "./components/ListTodo"
 import FilterTodo from "./components/FilterTodo"
-import { TodoItem } from "./assets/models/todo"
+import { TodoItem } from "./types/todo"
+import {
+  allFetchTodos,
+  createFetchTodos,
+  deleteFetchTodos,
+  checkFetchTodos,
+} from "./api/apiTodo.ts"
 import "./App.css"
 
 function App() {
   const [todo, setTodo] = useState<TodoItem[]>([])
   const [filter, setFilter] = useState<"all" | "work" | "done">("all")
-  const [editId, setEditId] = useState<string | null>(null)
+  const [editId, setEditId] = useState<number | null>(null)
   const [editText, setEditText] = useState<string>("")
   const [editError, setEditError] = useState<string | null>(null)
 
-  const addTodoHandler = (text: string) => {
-    const newTodo: TodoItem = {
-      id: new Date().toISOString(),
-      text,
-      isCompleted: false,
+  useEffect(() => {
+    async function loadTodos() {
+      try {
+        const data = await allFetchTodos()
+        setTodo(data)
+      } catch (error) {
+        console.error("Ошибка:", error)
+      }
     }
-    setTodo([...todo, newTodo])
+    loadTodos()
+  }, [todo])
+
+  const addTodoHandler = async (title: string) => {
+    try {
+      const newTodo = await createFetchTodos(title)
+
+      setTodo([...todo, newTodo])
+    } catch (error) {
+      console.error("Ошибка при добавлении задачи:", error)
+    }
   }
 
-  const deleteTodoHandler = (id: string) => {
-    setTodo(todo.filter((item) => item.id !== id))
+  const deleteTodoHandler = async (id: number) => {
+    try {
+      await deleteFetchTodos(id)
+      setTodo(todo.filter((item) => item.id !== id))
+    } catch (error) {
+      console.error("Ошибка при удалении задачи:", error)
+    }
   }
 
-  const editTodoHandler = (id: string) => {
+  const editTodoHandler = (id: number) => {
     const task = todo.find((item) => item.id === id)
     if (task) {
       setEditId(id)
-      setEditText(task.text)
+      setEditText(task.title)
     }
   }
 
-  const saveEditHandler = (id: string) => {
+  const saveEditHandler = (id: number) => {
     const trimmedText = editText.trim()
 
     if (trimmedText.length <= 2) {
@@ -48,7 +72,7 @@ function App() {
 
     setTodo(
       todo.map((item) =>
-        item.id === id ? { ...item, text: trimmedText } : item
+        item.id === id ? { ...item, title: trimmedText } : item
       )
     )
     setEditId(null)
@@ -62,22 +86,28 @@ function App() {
     setEditError(null)
   }
 
-  const checkTodoHandler = (id: string) => {
-    setTodo(
-      todo.map((item) =>
-        item.id === id
-          ? { ...item, isCompleted: !item.isCompleted }
-          : { ...item }
+  const checkTodoHandler = async (id: number) => {
+    const currentItem = todo.find((item) => item.id === id)
+    if (!currentItem) return
+
+    try {
+      await checkFetchTodos(id, !currentItem.isDone)
+      setTodo(
+        todo.map((item) =>
+          item.id === id ? { ...item, isDone: !item.isDone } : { ...item }
+        )
       )
-    )
+    } catch (error) {
+      console.error("Ошибка при check задачи:", error)
+    }
   }
 
-  const workCount = todo.filter((item) => !item.isCompleted).length
-  const doneCount = todo.filter((item) => item.isCompleted).length
+  const workCount = todo.filter((item) => !item.isDone).length
+  const doneCount = todo.filter((item) => item.isDone).length
 
   const filteredTodo = todo.filter((item) => {
-    if (filter === "work") return !item.isCompleted
-    if (filter === "done") return item.isCompleted
+    if (filter === "work") return !item.isDone
+    if (filter === "done") return item.isDone
     return true
   })
 

@@ -1,5 +1,5 @@
 import Todo from "./Todo"
-import { ListTodoProps } from "../assets/models/todo"
+import { ListTodoProps } from "../types/todo"
 
 const ListTodo: React.FC<ListTodoProps> = ({
   todo,
@@ -12,7 +12,7 @@ const ListTodo: React.FC<ListTodoProps> = ({
   saveEdit,
   cancelEdit,
   editError,
-  setEditError
+  setEditError,
 }) => {
   return (
     <div>

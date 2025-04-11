@@ -1,18 +1,18 @@
 export interface TodoItem {
-  id: string
-  text: string
-  isCompleted: boolean
+  id: number
+  title: string
+  isDone: boolean
 }
 
 export interface TodoProps {
   todo: TodoItem
   onDelete: () => void
-  checkTodo: (id: string) => void
-  editId: string | null
+  checkTodo: (id: number) => void
+  editId: number | null
   editText: string
   setEditText: (text: string) => void
-  editTodo: (id: string) => void
-  saveEdit: (id: string) => void
+  editTodo: (id: number) => void
+  saveEdit: (id: number) => void
   cancelEdit: () => void
   editError: string | null
   setEditError: React.Dispatch<React.SetStateAction<string | null>>
@@ -20,20 +20,20 @@ export interface TodoProps {
 
 export interface ListTodoProps {
   todo: TodoItem[]
-  deleteTodo: (id: string) => void
-  checkTodo: (id: string) => void
-  editId: string | null
+  deleteTodo: (id: number) => void
+  checkTodo: (id: number) => void
+  editId: number | null
   editText: string
   setEditText: (text: string) => void
-  editTodo: (id: string) => void
-  saveEdit: (id: string) => void
+  editTodo: (id: number) => void
+  saveEdit: (id: number) => void
   cancelEdit: () => void
   editError: string | null
   setEditError: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 export interface FormTodoProps {
-  addTodo: (text: string) => void
+  addTodo: (title: string) => void
 }
 
 export interface FilterTodoProps {
@@ -43,3 +43,11 @@ export interface FilterTodoProps {
   workCount: number
   doneCount: number
 }
+
+export interface Todo {
+  id: number;
+  title: string;
+  isDone: boolean;
+  created: string; 
+}
+

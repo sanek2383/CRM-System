@@ -1,4 +1,4 @@
-import { FilterTodoProps } from "../assets/models/todo"
+import { FilterTodoProps } from "../types/todo"
 import styles from "./FilterTodo.module.css"
 
 const FilterTodo = ({
