@@ -1,13 +1,22 @@
-import { FilterTodoProps } from "../types/todo"
+// import { filterFetchTodos } from "../api/apiTodo.ts"
+import { TodoItem } from "../types/todo.ts"
 import styles from "./FilterTodo.module.css"
 
-const FilterTodo = ({
-  setFilter,
-  filter,
-  allCount,
-  workCount,
-  doneCount,
-}: FilterTodoProps) => {
+interface FilterTodoProps {
+  setFilter: (filter: "all" | "work" | "done") => void
+  filter: "all" | "work" | "done"
+  todo: TodoItem[]
+}
+
+const FilterTodo = ({ todo, filter, setFilter }: FilterTodoProps) => {
+  
+
+  const allCount=todo.length
+
+  const workCount = todo.filter((item) => !item.isDone).length
+  const doneCount = todo.filter((item) => item.isDone).length
+
+
   return (
     <div className={styles.filterButton}>
       <button

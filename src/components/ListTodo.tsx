@@ -1,16 +1,24 @@
 import Todo from "./Todo"
-import { ListTodoProps } from "../types/todo"
+import { TodoItem } from "../types/todo"
+
+interface ListTodoProps{
+  todo: TodoItem[]
+  setTodo: React.Dispatch<React.SetStateAction<TodoItem[]>>
+  setEditId: React.Dispatch<React.SetStateAction<number | null>>
+  editId: number | null
+  editText: string
+  setEditText: (text: string) => void
+  editError: string | null
+  setEditError: React.Dispatch<React.SetStateAction<string | null>>
+}
 
 const ListTodo: React.FC<ListTodoProps> = ({
   todo,
-  deleteTodo,
-  checkTodo,
+  setTodo,
+  setEditId,
   editId,
   editText,
   setEditText,
-  editTodo,
-  saveEdit,
-  cancelEdit,
   editError,
   setEditError,
 }) => {
@@ -21,14 +29,11 @@ const ListTodo: React.FC<ListTodoProps> = ({
         <Todo
           key={item.id}
           todo={item}
-          onDelete={() => deleteTodo && deleteTodo(item.id)}
-          checkTodo={checkTodo}
+          setTodo={setTodo}
+          setEditId={setEditId}
           editId={editId}
           editText={editText}
           setEditText={setEditText}
-          editTodo={editTodo}
-          saveEdit={saveEdit}
-          cancelEdit={cancelEdit}
           editError={editError}
           setEditError={setEditError}
         />

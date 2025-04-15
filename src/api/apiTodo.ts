@@ -42,7 +42,7 @@ export async function checkFetchTodos(id: number, isDone: boolean) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({isDone})
+    body: JSON.stringify({ isDone }),
   })
 
   if (!response.ok) {
@@ -58,4 +58,34 @@ export async function deleteFetchTodos(id: number): Promise<void> {
   if (!response.ok) {
     throw new Error(`Ошибка при удалении: ${response.statusText}`)
   }
+}
+
+export async function editFetchTodos(id: number, title: string): Promise<Todo> {
+  const response = await fetch(`${allData}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ title, isDone: false }),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Ошибка при исправлении: ${response.statusText}`)
+  }
+  return (await response.json()) as Todo
+}
+
+export async function filterFetchTodos(title: string): Promise<Todo> {
+  const response = await fetch(allData, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ title }),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Ошибка фильтации: ${response.statusText}`)
+  }
+  return (await response.json()) as Todo
 }

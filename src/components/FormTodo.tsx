@@ -1,6 +1,9 @@
 import { useState, useRef } from "react"
-import { FormTodoProps } from "../types/todo"
 import styles from "./FormTodo.module.css"
+
+interface FormTodoProps {
+  addTodo: (title: string) => void
+}
 
 const FormTodo: React.FC<FormTodoProps> = ({ addTodo }) => {
   const [title, setTitle] = useState("")
