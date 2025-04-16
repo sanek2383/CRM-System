@@ -1,9 +1,18 @@
 import { Todo, TodoItem } from "../types/todo"
 
+type ServerResponse = {
+  data: Todo[]
+  info: {
+    all:number
+    completed:number
+    inWork:number
+  }
+}
+
 export const allData: string = "https://easydev.club/api/v1/todos"
 
-export async function allFetchTodos(): Promise<Todo[]> {
-  const response = await fetch(allData)
+export async function allFetchTodos(filter: 'all' | 'work' | 'done' = 'all'): Promise<ServerResponse> {
+  const response = await fetch(`${allData}?filter=${filter}`)
 
   if (!response.ok) {
     throw new Error(`Ошибка получения: ${response.status}`)
@@ -12,10 +21,21 @@ export async function allFetchTodos(): Promise<Todo[]> {
   const result = await response.json()
 
   if (result.data && Array.isArray(result.data)) {
-    return result.data
+    return {
+      data:result.data,
+      info:result.info,
+    }
   }
-  return []
+  return {
+    data: [],
+    info: {
+      all:0,
+      completed:0,
+      inWork:0,
+    }
+  }
 }
+
 
 export async function createFetchTodos(title: string): Promise<TodoItem> {
   const response = await fetch(allData, {

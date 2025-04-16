@@ -1,21 +1,18 @@
-// import { filterFetchTodos } from "../api/apiTodo.ts"
-import { TodoItem } from "../types/todo.ts"
 import styles from "./FilterTodo.module.css"
 
+interface TodoStats {
+  all: number
+  completed: number
+  inWork: number
+}
 interface FilterTodoProps {
   setFilter: (filter: "all" | "work" | "done") => void
   filter: "all" | "work" | "done"
-  todo: TodoItem[]
+  todoStats: TodoStats
 }
 
-const FilterTodo = ({ todo, filter, setFilter }: FilterTodoProps) => {
-  
-
-  const allCount=todo.length
-
-  const workCount = todo.filter((item) => !item.isDone).length
-  const doneCount = todo.filter((item) => item.isDone).length
-
+const FilterTodo = ({ todoStats, filter, setFilter }: FilterTodoProps) => {
+  const { all, completed, inWork } = todoStats
 
   return (
     <div className={styles.filterButton}>
@@ -23,19 +20,19 @@ const FilterTodo = ({ todo, filter, setFilter }: FilterTodoProps) => {
         onClick={() => setFilter("all")}
         className={filter === "all" ? styles.active : "buttonFilter"}
       >
-        all ({allCount})
+        all ({all})
       </button>
       <button
         onClick={() => setFilter("work")}
         className={filter === "work" ? styles.active : "buttonFilter"}
       >
-        work ({workCount})
+        work ({inWork})
       </button>
       <button
         onClick={() => setFilter("done")}
         className={filter === "done" ? styles.active : "buttonFilter"}
       >
-        done ({doneCount})
+        done ({completed})
       </button>
     </div>
   )

@@ -8,6 +8,11 @@ import { allFetchTodos, createFetchTodos } from "../api/apiTodo.ts"
 function MainTodoComponent() {
   const [todo, setTodo] = useState<TodoItem[]>([])
   const [filter, setFilter] = useState<"all" | "work" | "done">("all")
+  const [todoStats, setTodoStats] = useState({
+    all: 0,
+    completed: 0,
+    inWork: 0
+  })
   const [editId, setEditId] = useState<number | null>(null)
   const [editText, setEditText] = useState<string>("")
   const [editError, setEditError] = useState<string | null>(null)
@@ -15,14 +20,16 @@ function MainTodoComponent() {
   useEffect(() => {
     async function loadTodos() {
       try {
-        const data = await allFetchTodos()
-        setTodo(data)
+        const response = await allFetchTodos(filter)
+        setTodo(response.data)
+        setTodoStats(response.info)
       } catch (error) {
         console.error("Ошибка:", error)
       }
     }
     loadTodos()
-  }, [])
+  }, [filter])
+console.log(todo);
 
   const addTodoHandler = async (title: string) => {
     try {
@@ -35,19 +42,18 @@ function MainTodoComponent() {
   }
 
   const filteredTodos = todo.filter((item) => {
-    if (filter === "work") return !item.isDone;
-    if (filter === "done") return item.isDone;
-    return true;
+    if (filter === "work") return !item.isDone
+    if (filter === "done") return item.isDone
+    return true
   })
 
   return (
     <>
       <FormTodo addTodo={addTodoHandler} />
       <FilterTodo
-        todo={todo}
+        todoStats={todoStats}
         setFilter={setFilter}
         filter={filter}
-        // allCount={todo.length}
       />
       <ListTodo
         todo={filteredTodos}
