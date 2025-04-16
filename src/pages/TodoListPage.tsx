@@ -11,41 +11,53 @@ function MainTodoComponent() {
   const [todoStats, setTodoStats] = useState({
     all: 0,
     completed: 0,
-    inWork: 0
+    inWork: 0,
   })
   const [editId, setEditId] = useState<number | null>(null)
   const [editText, setEditText] = useState<string>("")
   const [editError, setEditError] = useState<string | null>(null)
 
-  useEffect(() => {
-    async function loadTodos() {
-      try {
-        const response = await allFetchTodos(filter)
-        setTodo(response.data)
-        setTodoStats(response.info)
-      } catch (error) {
-        console.error("Ошибка:", error)
-      }
-    }
-    loadTodos()
-  }, [filter])
-console.log(todo);
-
-  const addTodoHandler = async (title: string) => {
+  const loadTodos = async () => {
     try {
-      const newTodo = await createFetchTodos(title)
-
-      setTodo([...todo, newTodo])
+      const response = await allFetchTodos(filter)
+      setTodo(response.data)
+      setTodoStats(response.info)
     } catch (error) {
-      console.error("Ошибка при добавлении задачи:", error)
+      console.error("Ошибка:", error)
     }
   }
+
+  useEffect(() => {
+    loadTodos()
+  }, [])
 
   const filteredTodos = todo.filter((item) => {
     if (filter === "work") return !item.isDone
     if (filter === "done") return item.isDone
     return true
   })
+
+  useEffect(() => {
+    const allCount = todo.length
+    const completedCount = todo.filter((item) => item.isDone).length
+    const inWorkCount = allCount - completedCount
+
+    setTodoStats({
+      all: allCount,
+      completed: completedCount,
+      inWork: inWorkCount,
+    })
+  }, [todo])
+
+  const addTodoHandler = async (title: string) => {
+    try {
+      const newTodo = await createFetchTodos(title)
+
+      setTodo((prevTodos) => [...prevTodos, newTodo])
+    } catch (error) {
+      console.error("Ошибка при добавлении задачи:", error)
+    }
+  }
 
   return (
     <>

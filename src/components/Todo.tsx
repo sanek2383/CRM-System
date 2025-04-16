@@ -84,12 +84,11 @@ const Todo: React.FC<TodoProps> = ({
   }
 
   const checkTodoHandler = async () => {
-
     try {
       await checkFetchTodos(todo.id, !todo.isDone)
-      setTodo((prevTodos)=>
+      setTodo((prevTodos) =>
         prevTodos.map((item) =>
-          item.id === todo.id ? { ...item, isDone: !item.isDone } : item 
+          item.id === todo.id ? { ...item, isDone: !item.isDone } : item
         )
       )
     } catch (error) {
@@ -154,17 +153,15 @@ const Todo: React.FC<TodoProps> = ({
           </button>
         )}
 
-        {deleteTodoHandler && (
-          <button
-            className={styles.deleteButton}
-            onClick={() => deleteTodoHandler(todo.id)}
-          >
-            <img
-              src={iconRecycleBin}
-              alt="Удалить"
-            />
-          </button>
-        )}
+        <button
+          className={styles.deleteButton}
+          onClick={() => deleteTodoHandler(todo.id)}
+        >
+          <img
+            src={iconRecycleBin}
+            alt="Удалить"
+          />
+        </button>
       </div>
       {isEditing && editError && (
         <p style={{ color: "red", margin: "5px 0 0 0" }}>{editError}</p>
