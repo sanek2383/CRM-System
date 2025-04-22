@@ -1,11 +1,14 @@
 import { useState, useRef } from "react"
+import { createFetchTodos } from "../api/apiTodo.ts"
+import { TodoItem } from "../types/todo"
 import styles from "./FormTodo.module.css"
 
 interface FormTodoProps {
-  addTodo: (title: string) => void
+  setTodo: React.Dispatch<React.SetStateAction<TodoItem[]>>
+  reloadTodos: () => void
 }
 
-const FormTodo: React.FC<FormTodoProps> = ({ addTodo }) => {
+const FormTodo: React.FC<FormTodoProps> = ({setTodo, reloadTodos}) => {
   const [title, setTitle] = useState("")
   const [error, setError] = useState<string | null>(null)
 
@@ -26,9 +29,20 @@ const FormTodo: React.FC<FormTodoProps> = ({ addTodo }) => {
       inputRef.current?.focus()
       return
     }
-    addTodo(enteredText)
+    addTodoHandler(enteredText)
     setTitle("")
     setError(null)
+  }
+
+  const addTodoHandler = async (title: string) => {
+    try {
+      const newTodo = await createFetchTodos(title)
+
+      setTodo((prevTodos) => [...prevTodos, newTodo])
+      reloadTodos()
+    } catch (error) {
+      alert("Ошибка при добавлении задачи:" + error)
+    }
   }
 
   return (

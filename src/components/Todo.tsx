@@ -1,7 +1,8 @@
+import { useState } from "react"
 import { TodoItem } from "../types/todo"
 import {
   deleteFetchTodos,
-  checkFetchTodos,
+  changeTodoStatus,
   editFetchTodos,
 } from "../api/apiTodo"
 import styles from "./Todo.module.css"
@@ -11,32 +12,23 @@ import iconRecycleBin from "../../public/icon-recycle-bin.png"
 interface TodoProps {
   todo: TodoItem
   setTodo: React.Dispatch<React.SetStateAction<TodoItem[]>>
-  setEditId: React.Dispatch<React.SetStateAction<number | null>>
-  editId: number | null
-  editText: string
-  setEditText: (text: string) => void
-  editError: string | null
-  setEditError: React.Dispatch<React.SetStateAction<string | null>>
+  reloadTodos: () => void
 }
 
-const Todo: React.FC<TodoProps> = ({
-  todo,
-  setTodo,
-  setEditId,
-  editId,
-  editText,
-  setEditText,
-  editError,
-  setEditError,
-}) => {
+const Todo: React.FC<TodoProps> = ({ todo, setTodo, reloadTodos }) => {
+  const [editId, setEditId] = useState<number | null>(null)
+  const [editText, setEditText] = useState<string>("")
+  const [editError, setEditError] = useState<string | null>(null)
+
   const isEditing = editId === todo.id
 
   const deleteTodoHandler = async (id: number) => {
     try {
       await deleteFetchTodos(id)
       setTodo((prevTodos) => prevTodos.filter((item) => item.id !== id))
+      reloadTodos()
     } catch (error) {
-      console.error("Ошибка при удалении задачи:", error)
+      alert("Ошибка при удалении задачи:" + error)
     }
   }
 
@@ -46,11 +38,12 @@ const Todo: React.FC<TodoProps> = ({
       setEditId(id)
       setEditText(todo.title)
     } catch (error) {
-      console.error("Ошибка при редактировании задачи:", error)
+      alert("Ошибка при редактировании задачи:" + error)
     }
   }
 
-  const saveEditHandler = async (id: number) => {
+  const saveEditHandler = async (event: React.FormEvent) => {
+    event.preventDefault()
     const trimmedText = editText.trim()
 
     if (trimmedText.length <= 2) {
@@ -63,21 +56,22 @@ const Todo: React.FC<TodoProps> = ({
       return
     }
     try {
-      await editFetchTodos(id, trimmedText)
+      await editFetchTodos(todo.id, trimmedText)
       setTodo((prevTodos) =>
         prevTodos.map((item) =>
-          item.id === id ? { ...item, title: trimmedText } : item
+          item.id === todo.id ? { ...item, title: trimmedText } : item
         )
       )
       setEditId(null)
       setEditText("")
       setEditError(null)
+      reloadTodos()
     } catch (error) {
-      console.error("Ошибка при сохранении задачи:", error)
+      alert("Ошибка при сохранении задачи:" + error)
     }
   }
 
-  const cancelEdit = () => {
+  const cancelEditHandler = () => {
     setEditId(null)
     setEditText("")
     setEditError(null)
@@ -85,14 +79,15 @@ const Todo: React.FC<TodoProps> = ({
 
   const checkTodoHandler = async () => {
     try {
-      await checkFetchTodos(todo.id, !todo.isDone)
+      await changeTodoStatus(todo.id, !todo.isDone)
       setTodo((prevTodos) =>
         prevTodos.map((item) =>
           item.id === todo.id ? { ...item, isDone: !item.isDone } : item
         )
       )
+      reloadTodos()
     } catch (error) {
-      console.error("Ошибка при check задачи:", error)
+      alert("Ошибка при check задачи:" + error)
     }
   }
 
@@ -100,9 +95,7 @@ const Todo: React.FC<TodoProps> = ({
     <>
       <div className={styles.todo}>
         <div
-          className={`${styles.todoText} ${
-            todo.isDone ? styles.completedTodo : ""
-          }`}
+          className={styles.todoText}
         >
           <input
             type="checkbox"
@@ -112,36 +105,37 @@ const Todo: React.FC<TodoProps> = ({
           />
 
           {isEditing ? (
-            <input
-              type="text"
-              value={editText}
-              onChange={(e) => {
-                setEditText(e.target.value)
-                if (editError) setEditError(null)
-              }}
-              autoFocus
-            />
+            <form onSubmit={saveEditHandler}>
+              <input
+                type="text"
+                value={editText}
+                onChange={(e) => {
+                  setEditText(e.target.value)
+                  if (editError) setEditError(null)
+                }}
+              className={`${
+                todo.isDone ? styles.completedTodo : ""
+              }`}
+                autoFocus
+              />
+              <button
+                className={styles.saveButton}
+                type="submit"
+              >
+                Сохранить
+              </button>
+              <button
+                className={styles.cancelButton}
+                onClick={cancelEditHandler}
+              >
+                Отмена
+              </button>
+            </form>
           ) : (
             <span>{todo.title}</span>
           )}
         </div>
-
-        {isEditing ? (
-          <>
-            <button
-              className={styles.saveButton}
-              onClick={() => saveEditHandler(todo.id)}
-            >
-              Сохранить
-            </button>
-            <button
-              className={styles.cancelButton}
-              onClick={cancelEdit}
-            >
-              Отмена
-            </button>
-          </>
-        ) : (
+        <div>
           <button
             className={styles.writingButton}
             onClick={() => editTodoHandler(todo.id)}
@@ -151,7 +145,8 @@ const Todo: React.FC<TodoProps> = ({
               alt="Редактировать"
             />
           </button>
-        )}
+          <div/>
+        </div>
 
         <button
           className={styles.deleteButton}

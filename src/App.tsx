@@ -1,10 +1,10 @@
 import "./App.css"
-import MainTodoComponent from "./pages/TodoListPage.tsx"
+import TodoListPage from "./pages/TodoListPage.tsx"
 
 function App() {
   return (
     <>
-      <MainTodoComponent />
+      <TodoListPage />
     </>
   )
 }

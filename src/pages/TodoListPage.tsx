@@ -1,84 +1,67 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import FormTodo from "../components/FormTodo.tsx"
 import ListTodo from "../components/ListTodo.tsx"
 import FilterTodo from "../components/FilterTodo.tsx"
-import { TodoItem } from "../types/todo.ts"
-import { allFetchTodos, createFetchTodos } from "../api/apiTodo.ts"
+import { TodoItem, Todo } from "../types/todo.ts"
+import { allFetchTodos } from "../api/apiTodo.ts"
 
-function MainTodoComponent() {
-  const [todo, setTodo] = useState<TodoItem[]>([])
-  const [filter, setFilter] = useState<"all" | "work" | "done">("all")
+function TodoListPage() {
+  const [todos, setTodo] = useState<TodoItem[]>([])
+  const [filter, setFilter] = useState<"all" | "inWork" | "completed">("all")
   const [todoStats, setTodoStats] = useState({
     all: 0,
     completed: 0,
     inWork: 0,
   })
-  const [editId, setEditId] = useState<number | null>(null)
-  const [editText, setEditText] = useState<string>("")
-  const [editError, setEditError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
-  const loadTodos = async () => {
+  const loadTodos = useCallback(async () => {
+    setIsLoading(true)
     try {
       const response = await allFetchTodos(filter)
-      setTodo(response.data)
-      setTodoStats(response.info)
+      if (response.info) {
+        setTodo(
+          response.data.map((item: Todo) => ({
+            id: item.id,
+            title: item.title,
+            isDone: item.isDone,
+          }))
+        )
+        setTodoStats(response.info)
+      }
     } catch (error) {
-      console.error("Ошибка:", error)
+      alert("Ошибка:" + error)
+    } finally {
+      setIsLoading(false)
     }
-  }
+  }, [filter])
 
   useEffect(() => {
     loadTodos()
-  }, [])
-
-  const filteredTodos = todo.filter((item) => {
-    if (filter === "work") return !item.isDone
-    if (filter === "done") return item.isDone
-    return true
-  })
-
-  useEffect(() => {
-    const allCount = todo.length
-    const completedCount = todo.filter((item) => item.isDone).length
-    const inWorkCount = allCount - completedCount
-
-    setTodoStats({
-      all: allCount,
-      completed: completedCount,
-      inWork: inWorkCount,
-    })
-  }, [todo])
-
-  const addTodoHandler = async (title: string) => {
-    try {
-      const newTodo = await createFetchTodos(title)
-
-      setTodo((prevTodos) => [...prevTodos, newTodo])
-    } catch (error) {
-      console.error("Ошибка при добавлении задачи:", error)
-    }
-  }
+  }, [loadTodos])
 
   return (
     <>
-      <FormTodo addTodo={addTodoHandler} />
+      <FormTodo
+        setTodo={setTodo}
+        reloadTodos={loadTodos}
+      />
       <FilterTodo
         todoStats={todoStats}
         setFilter={setFilter}
         filter={filter}
       />
-      <ListTodo
-        todo={filteredTodos}
-        setTodo={setTodo}
-        setEditId={setEditId}
-        editId={editId}
-        editText={editText}
-        setEditText={setEditText}
-        editError={editError}
-        setEditError={setEditError}
-      />
+      {isLoading ? (
+        <div>Загрузка...</div>
+      ) : (
+        <ListTodo
+          todo={todos}
+          setTodo={setTodo}
+          reloadTodos={loadTodos}
+        />
+      )}
     </>
   )
 }
 
-export default MainTodoComponent
+export default TodoListPage

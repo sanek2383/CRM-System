@@ -1,33 +1,37 @@
 .todo {
   display: flex;
   align-items: center;
-  padding: 10px 20px;
-  margin: 15px 0;
+  padding: 0.5rem 1.4rem;
+  margin: 1rem 0;
   font-size: 1.2em;
   background-color: #fbfef9;
   border-radius: 5px;
-  box-shadow: 3px 3px 3px grey;
+  box-shadow: 3px 3px 3px #808080;
   user-select: none;
 }
 
 .todoText {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
   width: 100%;
   text-align: left;
-  gap: 10px;
+  gap: 1rem;
+}
+.todoText form {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
 }
 
 .deleteButton,
 .writingButton {
   background-color: #ff6b6b;
-  color: white;
+  color: #ffffff;
   border: none;
-  padding: 5px 15px;
+  padding: 0.5rem 1rem;
   border-radius: 5px;
   cursor: pointer;
-  margin-left: 5px;
+  margin-left: 0.5rem;
 }
 
 .writingButton{
@@ -35,7 +39,7 @@
 }
 
 button img {
-  width: 20px;
+  width: 1.4rem;
 }
 
 .deleteButton:hover {
@@ -48,8 +52,8 @@ button img {
 
 input[type="checkbox"] {
   appearance: none;
-  height: 8px;
-  padding: 8px;
+  height: 0.5rem;
+  padding: .5rem;
   border: 1px solid #229bec;
   border-radius: 50px;
   background-color: #fff;
@@ -67,10 +71,10 @@ input[type="checkbox"]:checked {
 .saveButton,
 .cancelButton{
   border: none;
-  padding: 5px 15px;
-  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
   cursor: pointer;
-  margin-left: 5px;
+  margin-left: 0.5rem;
 }
 
 

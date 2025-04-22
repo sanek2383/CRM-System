@@ -5,14 +5,14 @@
 
 .filterButton button{
     background-color: inherit;
-    color: grey;
-    padding: 1px;
-    border-bottom: 1px solid black;
+    color: #808080;
+    padding: .1rem;
+    border-bottom: 1px solid #000000;
     border-radius: 0px;
     outline: none;
 }
 
 button.active {
-    color: rgb(8, 137, 180);
+    color: #0889b4;
     font-weight: bold;
   }

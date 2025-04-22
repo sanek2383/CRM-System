@@ -10,5 +10,10 @@ export interface Todo {
   isDone: boolean
   created: string
 }
+export interface TodoFilterItem {
+  all: string
+  inWork: string
+  completed: string
+}
 
 

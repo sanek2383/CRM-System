@@ -6,8 +6,8 @@ interface TodoStats {
   inWork: number
 }
 interface FilterTodoProps {
-  setFilter: (filter: "all" | "work" | "done") => void
-  filter: "all" | "work" | "done"
+  setFilter: (filter: "all" | "inWork" | "completed") => void
+  filter: "all" | "inWork" | "completed"
   todoStats: TodoStats
 }
 
@@ -20,19 +20,19 @@ const FilterTodo = ({ todoStats, filter, setFilter }: FilterTodoProps) => {
         onClick={() => setFilter("all")}
         className={filter === "all" ? styles.active : "buttonFilter"}
       >
-        all ({all})
+        Все ({all})
       </button>
       <button
-        onClick={() => setFilter("work")}
-        className={filter === "work" ? styles.active : "buttonFilter"}
+        onClick={() => setFilter("inWork")}
+        className={filter === "inWork" ? styles.active : "buttonFilter"}
       >
-        work ({inWork})
+        В работе ({inWork})
       </button>
       <button
-        onClick={() => setFilter("done")}
-        className={filter === "done" ? styles.active : "buttonFilter"}
+        onClick={() => setFilter("completed")}
+        className={filter === "completed" ? styles.active : "buttonFilter"}
       >
-        done ({completed})
+        Готово ({completed})
       </button>
     </div>
   )
