@@ -94,9 +94,7 @@ const Todo: React.FC<TodoProps> = ({ todo, setTodo, reloadTodos }) => {
   return (
     <>
       <div className={styles.todo}>
-        <div
-          className={styles.todoText}
-        >
+        <div className={styles.todoText}>
           <input
             type="checkbox"
             className={styles.checkbox}
@@ -113,9 +111,7 @@ const Todo: React.FC<TodoProps> = ({ todo, setTodo, reloadTodos }) => {
                   setEditText(e.target.value)
                   if (editError) setEditError(null)
                 }}
-              className={`${
-                todo.isDone ? styles.completedTodo : ""
-              }`}
+                className={`${todo.isDone ? styles.completedTodo : ""}`}
                 autoFocus
               />
               <button
@@ -125,6 +121,7 @@ const Todo: React.FC<TodoProps> = ({ todo, setTodo, reloadTodos }) => {
                 Сохранить
               </button>
               <button
+                type="button"
                 className={styles.cancelButton}
                 onClick={cancelEditHandler}
               >
@@ -135,7 +132,8 @@ const Todo: React.FC<TodoProps> = ({ todo, setTodo, reloadTodos }) => {
             <span>{todo.title}</span>
           )}
         </div>
-        <div>
+
+        {!isEditing && (
           <button
             className={styles.writingButton}
             onClick={() => editTodoHandler(todo.id)}
@@ -145,8 +143,7 @@ const Todo: React.FC<TodoProps> = ({ todo, setTodo, reloadTodos }) => {
               alt="Редактировать"
             />
           </button>
-          <div/>
-        </div>
+        )}
 
         <button
           className={styles.deleteButton}
