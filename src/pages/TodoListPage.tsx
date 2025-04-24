@@ -1,13 +1,13 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, } from "react"
 import FormTodo from "../components/FormTodo.tsx"
 import ListTodo from "../components/ListTodo.tsx"
 import FilterTodo from "../components/FilterTodo.tsx"
-import { TodoItem, Todo } from "../types/todo.ts"
+import { TodoItem, Todo, FilterTodoChoice } from "../types/todo.ts"
 import { allFetchTodos } from "../api/apiTodo.ts"
 
 function TodoListPage() {
   const [todos, setTodo] = useState<TodoItem[]>([])
-  const [filter, setFilter] = useState<"all" | "inWork" | "completed">("all")
+  const [filter, setFilter] = useState<FilterTodoChoice>("all")
   const [todoStats, setTodoStats] = useState({
     all: 0,
     completed: 0,
@@ -15,7 +15,7 @@ function TodoListPage() {
   })
   const [isLoading, setIsLoading] = useState(false)
 
-  const loadTodos = useCallback(async () => {
+  const loadTodos = async () => {
     setIsLoading(true)
     try {
       const response = await allFetchTodos(filter)
@@ -34,16 +34,16 @@ function TodoListPage() {
     } finally {
       setIsLoading(false)
     }
-  }, [filter])
+  }
 
   useEffect(() => {
     loadTodos()
-  }, [loadTodos])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter])
 
   return (
     <>
       <FormTodo
-        setTodo={setTodo}
         reloadTodos={loadTodos}
       />
       <FilterTodo
@@ -56,7 +56,6 @@ function TodoListPage() {
       ) : (
         <ListTodo
           todo={todos}
-          setTodo={setTodo}
           reloadTodos={loadTodos}
         />
       )}

@@ -11,9 +11,17 @@ export interface Todo {
   created: string
 }
 export interface TodoFilterItem {
-  all: string
-  inWork: string
-  completed: string
+  all: number
+  inWork: number
+  completed: number
 }
 
+export interface MetaResponse<T, N> {
+  data: T[]
+  info?: N
+  meta: {
+    totalAmount: number
+  }
+}
 
+export type FilterTodoChoice = "all" | "inWork" | "completed"

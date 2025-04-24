@@ -2,7 +2,7 @@ form {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.8rem;
+  margin-bottom: 2rem;
 }
 
 button {
@@ -26,7 +26,7 @@ button {
 
 input {
   height: 2rem;
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   border-bottom: 1px solid #040404;
   background-color: #c1bbbb;
 }

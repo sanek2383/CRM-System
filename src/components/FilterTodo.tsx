@@ -1,4 +1,6 @@
+import { FilterTodoChoice } from "../types/todo"
 import styles from "./FilterTodo.module.css"
+
 
 interface TodoStats {
   all: number
@@ -6,8 +8,8 @@ interface TodoStats {
   inWork: number
 }
 interface FilterTodoProps {
-  setFilter: (filter: "all" | "inWork" | "completed") => void
-  filter: "all" | "inWork" | "completed"
+  setFilter: (filter: FilterTodoChoice) => void
+  filter: FilterTodoChoice
   todoStats: TodoStats
 }
 

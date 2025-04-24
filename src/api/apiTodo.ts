@@ -1,20 +1,16 @@
-import { Todo, TodoItem } from "../types/todo"
-
-interface MetaResponse<T, N> {
-  data: T[]
-  info?: N
-  meta: {
-    totalAmount: number
-  }
-}
+import {
+  Todo,
+  TodoItem,
+  TodoFilterItem,
+  FilterTodoChoice,
+  MetaResponse,
+} from "../types/todo"
 
 export const URL_BASE: string = "https://easydev.club/api/v1/todos"
 
 export async function allFetchTodos(
-  filter: "all" | "inWork" | "completed" = "all"
-): Promise<
-  MetaResponse<Todo, { all: number; completed: number; inWork: number }>
-> {
+  filter: FilterTodoChoice = "all"
+): Promise<MetaResponse<Todo, TodoFilterItem>> {
   try {
     const response = await fetch(`${URL_BASE}?filter=${filter}`)
 
@@ -28,7 +24,6 @@ export async function allFetchTodos(
     throw error
   }
 }
-
 
 export async function createFetchTodos(title: string): Promise<TodoItem> {
   try {

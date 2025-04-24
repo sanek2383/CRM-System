@@ -11,21 +11,18 @@ import iconRecycleBin from "../../public/icon-recycle-bin.png"
 
 interface TodoProps {
   todo: TodoItem
-  setTodo: React.Dispatch<React.SetStateAction<TodoItem[]>>
   reloadTodos: () => void
 }
 
-const Todo: React.FC<TodoProps> = ({ todo, setTodo, reloadTodos }) => {
-  const [editId, setEditId] = useState<number | null>(null)
+const Todo: React.FC<TodoProps> = ({ todo, reloadTodos }) => {
+  const [isEdit, setIsEdit] = useState(false)
   const [editText, setEditText] = useState<string>("")
   const [editError, setEditError] = useState<string | null>(null)
 
-  const isEditing = editId === todo.id
 
   const deleteTodoHandler = async (id: number) => {
     try {
       await deleteFetchTodos(id)
-      setTodo((prevTodos) => prevTodos.filter((item) => item.id !== id))
       reloadTodos()
     } catch (error) {
       alert("Ошибка при удалении задачи:" + error)
@@ -35,7 +32,7 @@ const Todo: React.FC<TodoProps> = ({ todo, setTodo, reloadTodos }) => {
   const editTodoHandler = async (id: number) => {
     if (todo.id !== id) return
     try {
-      setEditId(id)
+      setIsEdit(true)
       setEditText(todo.title)
     } catch (error) {
       alert("Ошибка при редактировании задачи:" + error)
@@ -44,6 +41,7 @@ const Todo: React.FC<TodoProps> = ({ todo, setTodo, reloadTodos }) => {
 
   const saveEditHandler = async (event: React.FormEvent) => {
     event.preventDefault()
+
     const trimmedText = editText.trim()
 
     if (trimmedText.length <= 2) {
@@ -57,14 +55,10 @@ const Todo: React.FC<TodoProps> = ({ todo, setTodo, reloadTodos }) => {
     }
     try {
       await editFetchTodos(todo.id, trimmedText)
-      setTodo((prevTodos) =>
-        prevTodos.map((item) =>
-          item.id === todo.id ? { ...item, title: trimmedText } : item
-        )
-      )
-      setEditId(null)
-      setEditText("")
+
+      setIsEdit(false)
       setEditError(null)
+
       reloadTodos()
     } catch (error) {
       alert("Ошибка при сохранении задачи:" + error)
@@ -72,19 +66,14 @@ const Todo: React.FC<TodoProps> = ({ todo, setTodo, reloadTodos }) => {
   }
 
   const cancelEditHandler = () => {
-    setEditId(null)
-    setEditText("")
+    setIsEdit(false)
+    reloadTodos()
     setEditError(null)
   }
 
   const checkTodoHandler = async () => {
     try {
       await changeTodoStatus(todo.id, !todo.isDone)
-      setTodo((prevTodos) =>
-        prevTodos.map((item) =>
-          item.id === todo.id ? { ...item, isDone: !item.isDone } : item
-        )
-      )
       reloadTodos()
     } catch (error) {
       alert("Ошибка при check задачи:" + error)
@@ -102,7 +91,7 @@ const Todo: React.FC<TodoProps> = ({ todo, setTodo, reloadTodos }) => {
             onChange={checkTodoHandler}
           />
 
-          {isEditing ? (
+          {isEdit? (
             <form onSubmit={saveEditHandler}>
               <input
                 type="text"
@@ -111,7 +100,6 @@ const Todo: React.FC<TodoProps> = ({ todo, setTodo, reloadTodos }) => {
                   setEditText(e.target.value)
                   if (editError) setEditError(null)
                 }}
-                className={`${todo.isDone ? styles.completedTodo : ""}`}
                 autoFocus
               />
               <button
@@ -129,11 +117,13 @@ const Todo: React.FC<TodoProps> = ({ todo, setTodo, reloadTodos }) => {
               </button>
             </form>
           ) : (
-            <span>{todo.title}</span>
+            <span className={todo.isDone ? styles.completedTodo : ""}>
+              {todo.title}
+            </span>
           )}
         </div>
 
-        {!isEditing && (
+        {!isEdit && (
           <button
             className={styles.writingButton}
             onClick={() => editTodoHandler(todo.id)}
@@ -155,7 +145,7 @@ const Todo: React.FC<TodoProps> = ({ todo, setTodo, reloadTodos }) => {
           />
         </button>
       </div>
-      {isEditing && editError && (
+      {isEdit && editError && (
         <p style={{ color: "red", margin: "5px 0 0 0" }}>{editError}</p>
       )}
     </>

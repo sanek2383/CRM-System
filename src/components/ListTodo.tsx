@@ -3,13 +3,11 @@ import { TodoItem } from "../types/todo"
 
 interface ListTodoProps {
   todo: TodoItem[]
-  setTodo: React.Dispatch<React.SetStateAction<TodoItem[]>>
   reloadTodos: () => void
 }
 
 const ListTodo: React.FC<ListTodoProps> = ({
   todo,
-  setTodo,
   reloadTodos,
 }) => {
   return (
@@ -19,7 +17,6 @@ const ListTodo: React.FC<ListTodoProps> = ({
         <Todo
           key={item.id}
           todo={item}
-          setTodo={setTodo}
           reloadTodos={reloadTodos}
         />
       ))}
