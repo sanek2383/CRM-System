@@ -1,4 +1,4 @@
-import { useState, useEffect, } from "react"
+import { useState, useEffect } from "react"
 import FormTodo from "../components/FormTodo.tsx"
 import ListTodo from "../components/ListTodo.tsx"
 import FilterTodo from "../components/FilterTodo.tsx"
@@ -38,14 +38,16 @@ function TodoListPage() {
 
   useEffect(() => {
     loadTodos()
+    const intervalLoad = setInterval(() => {
+      loadTodos()
+    }, 5000)
+    return () => clearInterval(intervalLoad)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter])
 
   return (
     <>
-      <FormTodo
-        reloadTodos={loadTodos}
-      />
+      <FormTodo reloadTodos={loadTodos} />
       <FilterTodo
         todoStats={todoStats}
         setFilter={setFilter}

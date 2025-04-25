@@ -1,3 +1,4 @@
+import axios from "axios"
 import {
   Todo,
   TodoItem,
@@ -12,13 +13,9 @@ export async function allFetchTodos(
   filter: FilterTodoChoice = "all"
 ): Promise<MetaResponse<Todo, TodoFilterItem>> {
   try {
-    const response = await fetch(`${URL_BASE}?filter=${filter}`)
+    const response = await axios.get(`${URL_BASE}?filter=${filter}`)
 
-    if (!response.ok) {
-      throw new Error(`Ошибка получения данных: ${response.status}`)
-    }
-
-    return await response.json()
+    return response.data
   } catch (error) {
     alert("Ошибка получения данных: " + error)
     throw error
@@ -27,38 +24,34 @@ export async function allFetchTodos(
 
 export async function createFetchTodos(title: string): Promise<TodoItem> {
   try {
-    const response = await fetch(URL_BASE, {
-      method: "POST",
+    const response = await axios.post(URL_BASE, {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        title: title,
-        isDone: false,
-      }),
+      title: title,
+      isDone: false,
     })
-    if (!response.ok) {
-      throw new Error(`Ошибка при создании: ${response.statusText}`)
-    }
-    return await response.json()
+    return response.data
   } catch (error) {
     alert("Ошибка при создании: " + error)
     throw error
   }
 }
 
-export async function changeTodoStatus(id: number, isDone: boolean) {
+export async function changeTodoStatus(
+  id: number,
+  isDone: boolean
+): Promise<void> {
   try {
-    const response = await fetch(`${URL_BASE}/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ isDone }),
-    })
-    if (!response.ok) {
-      throw new Error(`Ошибка при выборе: ${response.statusText}`)
-    }
+    await axios.put(
+      `${URL_BASE}/${id}`,
+      { isDone },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
   } catch (error) {
     alert("Ошибка при выборе: " + error)
     throw error
@@ -67,12 +60,7 @@ export async function changeTodoStatus(id: number, isDone: boolean) {
 
 export async function deleteFetchTodos(id: number): Promise<void> {
   try {
-    const response = await fetch(`${URL_BASE}/${id}`, {
-      method: "DELETE",
-    })
-    if (!response.ok) {
-      throw new Error(`Ошибка при удалении: ${response.statusText}`)
-    }
+    await axios.delete(`${URL_BASE}/${id}`, {})
   } catch (error) {
     alert("Ошибка при удалении: " + error)
     throw error
@@ -81,17 +69,15 @@ export async function deleteFetchTodos(id: number): Promise<void> {
 
 export async function editFetchTodos(id: number, title: string): Promise<Todo> {
   try {
-    const response = await fetch(`${URL_BASE}/${id}`, {
-      method: "PUT",
+    const response = await axios.put(`${URL_BASE}/${id}`, {
+      title,
+      isDone: false,
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title, isDone: false }),
     })
-    if (!response.ok) {
-      throw new Error(`Ошибка при исправлении: ${response.statusText}`)
-    }
-    return (await response.json()) as Todo
+
+    return response.data
   } catch (error) {
     alert("Ошибка при исправлении: " + error)
     throw error

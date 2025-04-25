@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Checkbox, Button, Form, Input } from "antd"
 import { TodoItem } from "../types/todo"
 import {
   deleteFetchTodos,
@@ -14,11 +15,20 @@ interface TodoProps {
   reloadTodos: () => void
 }
 
+const layout = {
+  labelCol: { span: 8 },
+  wrapperCol: { span: 16 },
+}
+
+const tailLayout = {
+  wrapperCol: { offset: 8, span: 16 },
+}
+
 const Todo: React.FC<TodoProps> = ({ todo, reloadTodos }) => {
   const [isEdit, setIsEdit] = useState(false)
   const [editText, setEditText] = useState<string>("")
   const [editError, setEditError] = useState<string | null>(null)
-
+  const [form] = Form.useForm()
 
   const deleteTodoHandler = async (id: number) => {
     try {
@@ -34,15 +44,14 @@ const Todo: React.FC<TodoProps> = ({ todo, reloadTodos }) => {
     try {
       setIsEdit(true)
       setEditText(todo.title)
+      form.setFieldsValue({ noteEdit: todo.title })
     } catch (error) {
       alert("Ошибка при редактировании задачи:" + error)
     }
   }
 
-  const saveEditHandler = async (event: React.FormEvent) => {
-    event.preventDefault()
-
-    const trimmedText = editText.trim()
+  const saveEditHandler = async (value: { noteEdit: string }) => {
+    const trimmedText = value.noteEdit.trim()
 
     if (trimmedText.length <= 2) {
       setEditError("Текст должен содержать больше 2 символов.")
@@ -84,38 +93,54 @@ const Todo: React.FC<TodoProps> = ({ todo, reloadTodos }) => {
     <>
       <div className={styles.todo}>
         <div className={styles.todoText}>
-          <input
-            type="checkbox"
+          <Checkbox
+            onChange={checkTodoHandler}
             className={styles.checkbox}
             checked={todo.isDone}
-            onChange={checkTodoHandler}
-          />
+          ></Checkbox>
 
-          {isEdit? (
-            <form onSubmit={saveEditHandler}>
-              <input
-                type="text"
-                value={editText}
-                onChange={(e) => {
-                  setEditText(e.target.value)
-                  if (editError) setEditError(null)
-                }}
-                autoFocus
-              />
-              <button
-                className={styles.saveButton}
-                type="submit"
+          {isEdit ? (
+            <Form
+              {...layout}
+              form={form}
+              name="editForm"
+              onFinish={saveEditHandler}
+              style={{ maxWidth: 600 }}
+            >
+              <Form.Item
+                name="noteEdit"
+                rules={[
+                  { required: true, message: "Введите задачу" },
+                  { min: 3, message: "Текст должен содержать больше 2 символов." },
+                  { max: 64, message: "Текст должен быть короче 64 символов." },
+                ]}
               >
-                Сохранить
-              </button>
-              <button
-                type="button"
-                className={styles.cancelButton}
-                onClick={cancelEditHandler}
-              >
-                Отмена
-              </button>
-            </form>
+                <Input
+                  variant="underlined"
+                  placeholder="Task To Be Done..."
+                  value={editText}
+                  onChange={() => {
+                    if (editError) setEditError(null)
+                  }}
+                />
+              </Form.Item>
+              <Form.Item {...tailLayout}>
+                <Button
+                  className={styles.saveButton}
+                  type="primary"
+                  htmlType="submit"
+                >
+                  Сохранить
+                </Button>
+                <Button
+                  onClick={cancelEditHandler}
+                  className={styles.cancelButton}
+                  type="primary"
+                >
+                  Отмена
+                </Button>
+              </Form.Item>
+            </Form>
           ) : (
             <span className={todo.isDone ? styles.completedTodo : ""}>
               {todo.title}
@@ -124,26 +149,27 @@ const Todo: React.FC<TodoProps> = ({ todo, reloadTodos }) => {
         </div>
 
         {!isEdit && (
-          <button
-            className={styles.writingButton}
+          <Button
             onClick={() => editTodoHandler(todo.id)}
+            className={styles.writingButton}
+            type="primary"
           >
             <img
               src={iconWriting}
               alt="Редактировать"
             />
-          </button>
+          </Button>
         )}
-
-        <button
-          className={styles.deleteButton}
+        <Button
           onClick={() => deleteTodoHandler(todo.id)}
+          className={styles.deleteButton}
+          type="primary"
         >
           <img
             src={iconRecycleBin}
             alt="Удалить"
           />
-        </button>
+        </Button>
       </div>
       {isEdit && editError && (
         <p style={{ color: "red", margin: "5px 0 0 0" }}>{editError}</p>

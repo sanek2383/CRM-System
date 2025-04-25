@@ -24,12 +24,13 @@ button {
   border: none;
 }
 
-input {
+.inputTodo  {
   height: 2rem;
-  font-size: 1.25rem;
+  font-size: 1.25rem!important;
   border-bottom: 1px solid #040404;
-  background-color: #c1bbbb;
+  background-color: #c1bbbb!important;
 }
+
 
 input:focus {
   outline: none;

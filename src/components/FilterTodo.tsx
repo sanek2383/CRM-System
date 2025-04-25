@@ -1,6 +1,6 @@
+import { Button } from "antd"
 import { FilterTodoChoice } from "../types/todo"
 import styles from "./FilterTodo.module.css"
-
 
 interface TodoStats {
   all: number
@@ -18,24 +18,33 @@ const FilterTodo = ({ todoStats, filter, setFilter }: FilterTodoProps) => {
 
   return (
     <div className={styles.filterButton}>
-      <button
+      
+      <Button
+        type="primary"
+        htmlType="submit"
         onClick={() => setFilter("all")}
         className={filter === "all" ? styles.active : "buttonFilter"}
       >
         Все ({all})
-      </button>
-      <button
+      </Button>
+
+      <Button
+        type="primary"
+        htmlType="submit"
         onClick={() => setFilter("inWork")}
         className={filter === "inWork" ? styles.active : "buttonFilter"}
       >
         В работе ({inWork})
-      </button>
-      <button
+      </Button>
+      
+      <Button
+        type="primary"
+        htmlType="submit"
         onClick={() => setFilter("completed")}
         className={filter === "completed" ? styles.active : "buttonFilter"}
       >
         Готово ({completed})
-      </button>
+      </Button>
     </div>
   )
 }
