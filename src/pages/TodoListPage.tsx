@@ -13,7 +13,10 @@ function TodoListPage() {
     completed: 0,
     inWork: 0,
   })
+  const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+
+
 
   const loadTodos = async () => {
     setIsLoading(true)
@@ -39,11 +42,13 @@ function TodoListPage() {
   useEffect(() => {
     loadTodos()
     const intervalLoad = setInterval(() => {
-      loadTodos()
+      if (!isEditing) {
+        loadTodos()
+      }
     }, 5000)
     return () => clearInterval(intervalLoad)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter])
+  }, [filter,isEditing])
 
   return (
     <>
@@ -59,6 +64,7 @@ function TodoListPage() {
         <ListTodo
           todo={todos}
           reloadTodos={loadTodos}
+          setIsEditing={setIsEditing}
         />
       )}
     </>

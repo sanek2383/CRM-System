@@ -4,11 +4,13 @@ import { TodoItem } from "../types/todo"
 interface ListTodoProps {
   todo: TodoItem[]
   reloadTodos: () => void
+  setIsEditing: (isEditing: boolean) => void
 }
 
 const ListTodo: React.FC<ListTodoProps> = ({
   todo,
   reloadTodos,
+  setIsEditing,
 }) => {
   return (
     <div>
@@ -18,6 +20,7 @@ const ListTodo: React.FC<ListTodoProps> = ({
           key={item.id}
           todo={item}
           reloadTodos={reloadTodos}
+          setIsEditing={setIsEditing}
         />
       ))}
     </div>

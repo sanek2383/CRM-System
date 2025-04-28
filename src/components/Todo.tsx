@@ -13,6 +13,7 @@ import iconRecycleBin from "../../public/icon-recycle-bin.png"
 interface TodoProps {
   todo: TodoItem
   reloadTodos: () => void
+  setIsEditing: (isEditing: boolean) => void
 }
 
 const layout = {
@@ -24,7 +25,7 @@ const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
 }
 
-const Todo: React.FC<TodoProps> = ({ todo, reloadTodos }) => {
+const Todo: React.FC<TodoProps> = ({ todo, reloadTodos, setIsEditing }) => {
   const [isEdit, setIsEdit] = useState(false)
   const [editText, setEditText] = useState<string>("")
   const [editError, setEditError] = useState<string | null>(null)
@@ -43,6 +44,7 @@ const Todo: React.FC<TodoProps> = ({ todo, reloadTodos }) => {
     if (todo.id !== id) return
     try {
       setIsEdit(true)
+      setIsEditing(true)
       setEditText(todo.title)
       form.setFieldsValue({ noteEdit: todo.title })
     } catch (error) {
@@ -66,6 +68,7 @@ const Todo: React.FC<TodoProps> = ({ todo, reloadTodos }) => {
       await editFetchTodos(todo.id, trimmedText)
 
       setIsEdit(false)
+      setIsEditing(false)
       setEditError(null)
 
       reloadTodos()
