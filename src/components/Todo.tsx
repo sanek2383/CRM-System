@@ -55,15 +55,6 @@ const Todo: React.FC<TodoProps> = ({ todo, reloadTodos, setIsEditing }) => {
   const saveEditHandler = async (value: { noteEdit: string }) => {
     const trimmedText = value.noteEdit.trim()
 
-    if (trimmedText.length <= 2) {
-      setEditError("Текст должен содержать больше 2 символов.")
-      return
-    }
-
-    if (trimmedText.length > 64) {
-      setEditError("Текст должен быть короче 64 символов.")
-      return
-    }
     try {
       await editFetchTodos(todo.id, trimmedText)
 
@@ -114,7 +105,10 @@ const Todo: React.FC<TodoProps> = ({ todo, reloadTodos, setIsEditing }) => {
                 name="noteEdit"
                 rules={[
                   { required: true, message: "Введите задачу" },
-                  { min: 3, message: "Текст должен содержать больше 2 символов." },
+                  {
+                    min: 3,
+                    message: "Текст должен содержать больше 2 символов.",
+                  },
                   { max: 64, message: "Текст должен быть короче 64 символов." },
                 ]}
               >

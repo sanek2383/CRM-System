@@ -23,15 +23,6 @@ const FormTodo: React.FC<FormTodoProps> = ({ reloadTodos }) => {
   const onSubmitHandler = async (value: { note: string }) => {
     const enteredText = value.note.trim()
 
-    if (enteredText.length <= 2) {
-      setError("Текст должен содержать больше 2 символов.")
-      return
-    }
-    if (enteredText.length > 64) {
-      setError("Текст должен быть короче 64 символов.")
-      return
-    }
-
     try {
       await createFetchTodos(enteredText)
       form.resetFields()

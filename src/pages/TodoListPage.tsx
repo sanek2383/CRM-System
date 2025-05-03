@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import FormTodo from "../components/FormTodo.tsx"
 import ListTodo from "../components/ListTodo.tsx"
 import FilterTodo from "../components/FilterTodo.tsx"
@@ -16,9 +16,7 @@ function TodoListPage() {
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-
-
-  const loadTodos = async () => {
+  const loadTodos = useCallback(async () => {
     setIsLoading(true)
     try {
       const response = await allFetchTodos(filter)
@@ -37,7 +35,7 @@ function TodoListPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [filter])
 
   useEffect(() => {
     loadTodos()
@@ -47,8 +45,7 @@ function TodoListPage() {
       }
     }, 5000)
     return () => clearInterval(intervalLoad)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter,isEditing])
+  }, [loadTodos, isEditing])
 
   return (
     <>
@@ -71,4 +68,4 @@ function TodoListPage() {
   )
 }
 
-export default TodoListPage
+export default React.memo(TodoListPage)
