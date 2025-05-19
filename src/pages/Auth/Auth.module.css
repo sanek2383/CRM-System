@@ -1,0 +1,52 @@
+.formAuth {
+  display: flex;
+  flex-direction: column;
+  width: 23.5rem;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.authorizationContainer {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+}
+
+.imageAuthorization {
+  flex: 60%;
+}
+
+.imageAuthorization img {
+  width: 100%;
+  height: 100%;
+  /* object-fit: cover; */
+}
+
+.formAuthorization {
+  flex: 40%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  width: 23.5rem;
+}
+
+.formAuthorizationTitle {
+  text-align: start;
+  font-family: Nunito Sans;
+  position: relative;
+}
+
+.formAuthorizationTitle::before {
+  content: "";
+  position: absolute;
+  top: -30%;
+  left: 5%;
+  transform: translateX(-50%);
+  width: 4.5rem;
+  height: 4.5rem;
+  background-image: url("../../../public/Group.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}

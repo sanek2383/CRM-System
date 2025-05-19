@@ -1,26 +1,53 @@
-import { BrowserRouter, Routes, Route } from "react-router"
-
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import { AuthProvider } from "./pages/Auth/AuthProvider"
 import "./App.css"
-import TodoListPage from "./pages/TodoListPage.tsx"
-import TodoNavigationPage from "./pages/TodoNavigationPage.tsx"
-import UserProfile from "./pages/UserProfile.tsx"
+import TodoListPage from "./pages/TodoListPage/TodoListPage"
+import TodoNavigationPage from "./pages/TodoNavigationPage"
+import ProfilePage from "./pages/UserProfile/ProfilePage.tsx"
+import Auth from "./pages/Auth/Auth"
+import PrivateRoute from "./pages/Auth/PrivateRoute"
 
 function App() {
-
   return (
-    <BrowserRouter>
-        <TodoNavigationPage/>
-      <Routes>
-        <Route
-          index
-          element={<TodoListPage />}
-        />
-        <Route
-          path="userProfile"
-          element={<UserProfile />}
-        />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <TodoNavigationPage />
+        <Routes>
+          {/* защищённые маршруты */}
+          <Route
+            index
+            element={
+              <PrivateRoute>
+                <TodoListPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="userProfile"
+            element={
+              <PrivateRoute>
+                <ProfilePage />
+              </PrivateRoute>
+            }
+          />
+
+          {/* общедоступная авторизация */}
+          <Route
+            path="auth"
+            element={<Auth />}
+          />
+          <Route
+            path="*"
+            element={
+              <Navigate
+                to="/"
+                replace
+              />
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 

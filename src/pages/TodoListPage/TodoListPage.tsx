@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react"
-import FormTodo from "../components/FormTodo.tsx"
-import ListTodo from "../components/ListTodo.tsx"
-import FilterTodo from "../components/FilterTodo.tsx"
-import { TodoItem, Todo, FilterTodoChoice } from "../types/todo.ts"
-import { allFetchTodos } from "../api/apiTodo.ts"
+import FormTodo from "../../components/FormTodo/FormTodo.tsx"
+import ListTodo from "../../components/ListTodo/ListTodo.tsx"
+import FilterTodo from "../../components/FilterTodo/FilterTodo.tsx"
+import { TodoItem, Todo, FilterTodoChoice } from "../../types/todo.ts"
+import { allFetchTodos } from "../../api/apiTodo.ts"
+import styles from './TodoListPage.module.css'
 
 function TodoListPage() {
   const [todos, setTodo] = useState<TodoItem[]>([])
@@ -48,7 +49,7 @@ function TodoListPage() {
   }, [loadTodos, isEditing])
 
   return (
-    <>
+    <div className={styles.todoBlock}>
       <FormTodo reloadTodos={loadTodos} />
       <FilterTodo
         todoStats={todoStats}
@@ -64,7 +65,7 @@ function TodoListPage() {
           setIsEditing={setIsEditing}
         />
       )}
-    </>
+    </div>
   )
 }
 

@@ -7,7 +7,6 @@ import {
   MetaResponse,
 } from "../types/todo"
 
-// export const URL_BASE: string = "https://easydev.club/api/v1/todos"
 
 export async function allFetchTodos(
   filter: FilterTodoChoice = "all"

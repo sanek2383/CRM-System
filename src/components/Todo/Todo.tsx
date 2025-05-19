@@ -1,14 +1,14 @@
 import { useState } from "react"
 import { Checkbox, Button, Form, Input } from "antd"
-import { TodoItem } from "../types/todo"
+import { TodoItem } from "../../types/todo"
 import {
   deleteFetchTodos,
   changeTodoStatus,
   editFetchTodos,
-} from "../api/apiTodo"
+} from "../../api/apiTodo"
 import styles from "./Todo.module.css"
-import iconWriting from "../../public/icon-writing-1.png"
-import iconRecycleBin from "../../public/icon-recycle-bin.png"
+import iconWriting from "../../../public/icon-writing-1.png"
+import iconRecycleBin from "../../../public/icon-recycle-bin.png"
 
 interface TodoProps {
   todo: TodoItem
@@ -106,7 +106,7 @@ const Todo: React.FC<TodoProps> = ({ todo, reloadTodos, setIsEditing }) => {
                 rules={[
                   { required: true, message: "Введите задачу" },
                   {
-                    min: 3,
+                    min: 2,
                     message: "Текст должен содержать больше 2 символов.",
                   },
                   { max: 64, message: "Текст должен быть короче 64 символов." },
@@ -122,6 +122,7 @@ const Todo: React.FC<TodoProps> = ({ todo, reloadTodos, setIsEditing }) => {
                 />
               </Form.Item>
               <Form.Item {...tailLayout}>
+                <div style={{display: 'flex'}}>
                 <Button
                   className={styles.saveButton}
                   type="primary"
@@ -136,6 +137,7 @@ const Todo: React.FC<TodoProps> = ({ todo, reloadTodos, setIsEditing }) => {
                 >
                   Отмена
                 </Button>
+                </div>
               </Form.Item>
             </Form>
           ) : (
