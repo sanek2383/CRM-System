@@ -21,7 +21,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const token = localStorage.getItem("accessToken")
     setIsAuthenticated(!!token)
-  }, [])
+
+    try {
+      const userData = localStorage.getItem("user")
+      setUser(userData ? JSON.parse(userData) : null)
+    } catch {
+      setUser(null)
+    }
+  }, [isAuthenticated])
 
   // Подписка на изменения localStorage (например, logout в другом компоненте)
   useEffect(() => {
