@@ -1,14 +1,17 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useEffect, useCallback, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import FormTodo from "../../components/FormTodo/FormTodo.tsx"
 import ListTodo from "../../components/ListTodo/ListTodo.tsx"
 import FilterTodo from "../../components/FilterTodo/FilterTodo.tsx"
-import { TodoItem, Todo, FilterTodoChoice } from "../../types/todo.ts"
+import { Todo } from "../../types/todo.ts"
 import { allFetchTodos } from "../../api/apiTodo.ts"
+import { setTodos, setFilter, updateStats } from "../../redux/todoSlice"
+import { RootState } from "../../redux/store.ts"
 import styles from './TodoListPage.module.css'
 
 function TodoListPage() {
-  const [todos, setTodo] = useState<TodoItem[]>([])
-  const [filter, setFilter] = useState<FilterTodoChoice>("all")
+  const dispatch = useDispatch()
+  const { todos, filter } = useSelector((state: RootState) => state.todo)
   const [todoStats, setTodoStats] = useState({
     all: 0,
     completed: 0,
@@ -22,13 +25,12 @@ function TodoListPage() {
     try {
       const response = await allFetchTodos(filter)
       if (response.info) {
-        setTodo(
-          response.data.map((item: Todo) => ({
-            id: item.id,
-            title: item.title,
-            isDone: item.isDone,
-          }))
-        )
+        dispatch(setTodos(response.data.map((item: Todo) => ({
+          id: item.id,
+          title: item.title,
+          isDone: item.isDone,
+        }))))
+        dispatch(updateStats(response.info))
         setTodoStats(response.info)
       }
     } catch (error) {
@@ -36,7 +38,7 @@ function TodoListPage() {
     } finally {
       setIsLoading(false)
     }
-  }, [filter])
+  }, [filter, dispatch])
 
   useEffect(() => {
     loadTodos()
@@ -53,7 +55,7 @@ function TodoListPage() {
       <FormTodo reloadTodos={loadTodos} />
       <FilterTodo
         todoStats={todoStats}
-        setFilter={setFilter}
+        setFilter={(newFilter) => dispatch(setFilter(newFilter))}
         filter={filter}
       />
       {isLoading ? (

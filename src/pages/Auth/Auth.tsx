@@ -1,8 +1,9 @@
+import { useDispatch } from "react-redux"
 import { useState } from "react"
 import { Button, Checkbox, Form, Input, Modal } from "antd"
 import { useNavigate } from "react-router-dom"
 import authApi from "../../api/apiToken"
-import { useAuth } from "../../utils/useAuth"
+import { login } from "../../redux/authSlice"
 import { AuthData, UserRegistration } from "../../types/auth"
 import illustration from "../../../public/illustration.jpg"
 import styles from "./Auth.module.css"
@@ -32,16 +33,15 @@ const tailFormItemLayout = {
 }
 
 const Auth = () => {
+  const dispatch = useDispatch()
   const [isRegister, setIsRegister] = useState(false)
   const [form] = Form.useForm()
   const navigate = useNavigate()
-  const { login } = useAuth()
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   const onFinish = async (values: UserRegistration) => {
     try {
       const endpoint = isRegister ? "/auth/signup" : "/auth/signin"
-
       const apiData: AuthData | UserRegistration = isRegister
         ? {
             login: values.login,
@@ -62,9 +62,14 @@ const Auth = () => {
 
         localStorage.setItem("accessToken", accessToken)
         localStorage.setItem("refreshToken", refreshToken)
-        login(accessToken, user)
-        localStorage.setItem("user", JSON.stringify(user))
 
+        if (user) {
+          localStorage.setItem("user", JSON.stringify(user))
+        } else {
+          localStorage.removeItem("user")
+        }
+
+        dispatch(login({ token: accessToken, user }))
         navigate("/")
       } else {
         setIsRegister(false)

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useSelector } from "react-redux"
 import { NavLink, useLocation } from "react-router-dom"
 import {
   ContainerOutlined,
@@ -9,7 +10,7 @@ import {
 import type { MenuProps } from "antd"
 import { Button, Menu } from "antd"
 import styles from "./TodoListPage/TodoListPage.module.css"
-import { useAuth } from "../utils/useAuth"
+import { RootState } from "../redux/store"
 import LogoutButton from "../components/LogoutButton/LogoutButton"
 
 type MenuItem = Required<MenuProps>["items"][number]
@@ -34,7 +35,7 @@ const items: MenuItem[] = [
 ]
 
 const TodoNavigationPage = () => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth)
   const [collapsed, setCollapsed] = useState(false)
   const [selectedKey, setSelectedKey] = useState("1")
   const location = useLocation()

@@ -1,17 +1,23 @@
 import { Navigate } from "react-router-dom"
-import { useAuth } from "../../utils/useAuth"
-import { JSX } from "react"
+import {useSelector} from 'react-redux'
+import { RootState } from "../../redux/store"
+import TodoNavigationPage from "../TodoNavigationPage"
 
-const PrivateRoute = ({ children }: { children: JSX.Element }) => {
-  const { isAuthenticated } = useAuth()
+
+interface PrivateRouteProps {
+  component: React.ComponentType
+}
+
+const PrivateRoute = ({ component: Component }: PrivateRouteProps) => {
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth)
 
   return isAuthenticated ? (
-    children
+    <>
+      <TodoNavigationPage />
+      <Component />
+    </>
   ) : (
-    <Navigate
-      to="/auth"
-      replace
-    />
+    <Navigate to="/auth" replace />
   )
 }
 

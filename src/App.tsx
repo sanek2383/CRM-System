@@ -1,54 +1,56 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import { AuthProvider } from "./pages/Auth/AuthProvider"
 import "./App.css"
 import TodoListPage from "./pages/TodoListPage/TodoListPage"
-import TodoNavigationPage from "./pages/TodoNavigationPage"
-import ProfilePage from "./pages/UserProfile/ProfilePage.tsx"
+import ProfilePage from "./pages/UserProfile/ProfilePage"
 import Auth from "./pages/Auth/Auth"
 import PrivateRoute from "./pages/Auth/PrivateRoute"
+import { useDispatch, } from "react-redux"
+import { useEffect, useState } from "react"
+import authApi from "./api/apiToken"
+import { restoreAuthSuccess, logout } from "./redux/authSlice"
+import { Profile } from "./types/auth"
 
 function App() {
-  return (
-    <AuthProvider>
-      <BrowserRouter>
-        <TodoNavigationPage />
-        <Routes>
-          {/* защищённые маршруты */}
-          <Route
-            index
-            element={
-              <PrivateRoute>
-                <TodoListPage />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="userProfile"
-            element={
-              <PrivateRoute>
-                <ProfilePage />
-              </PrivateRoute>
-            }
-          />
+  const dispatch = useDispatch()
+  const [isLoading, setIsLoading] = useState(true)
 
-          {/* общедоступная авторизация */}
-          <Route
-            path="auth"
-            element={<Auth />}
-          />
-          <Route
-            path="*"
-            element={
-              <Navigate
-                to="/"
-                replace
-              />
-            }
-          />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+  useEffect(() => {
+    const restoreSession = async () => {
+      const token = localStorage.getItem("accessToken")
+      if (!token) {
+        setIsLoading(false)
+        return
+      }
+
+      try {
+        const res = await authApi.get<Profile>("/user/profile")
+        dispatch(restoreAuthSuccess({ token, user: res.data }))
+      } catch (err) {
+        console.error("Не удалось восстановить сессию", err)
+        dispatch(logout())
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    restoreSession()
+  }, [dispatch])
+
+  if (isLoading) {
+    return <div>Загрузка...</div>
+  }
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route index element={<PrivateRoute component={TodoListPage} />} />
+        <Route path="userProfile" element={<PrivateRoute component={ProfilePage} />} />
+        <Route path="auth" element={<Auth />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
 export default App
+
