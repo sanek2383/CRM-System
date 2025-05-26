@@ -1,6 +1,7 @@
 import axios from "axios"
+import { AxiosError } from "axios"
 import { Token } from "../types/auth"
-import { api } from "./axiosInstance"
+// import { api } from "./axiosInstance"
 
 type FailedQueueItem = {
   reject: (error: unknown) => void
@@ -62,7 +63,37 @@ authApi.interceptors.response.use(
         const refreshToken = localStorage.getItem("refreshToken")
 
         if (!refreshToken) {
-          return Promise.reject(new Error("Refresh token not found"))
+          if (originalRequest.url.includes("/signin")) {
+            return Promise.reject(
+              new AxiosError(
+                "Неверный логин или пароль",
+                "ERR_BAD_REQUEST",
+                originalRequest,
+                null,
+                {
+                  status: 401,
+                  statusText: "Unauthorized",
+                  data: {
+                    message: "Неверный логин или пароль",
+                    code: "auth/invalid-credentials",
+                  },
+                  headers: {},
+                  config: originalRequest,
+                }
+              )
+            )
+          }
+
+          return Promise.reject({
+            response: {
+              status: 401,
+              data: {
+                message: "Сессия истекла. Авторизуйтесь заново.",
+                code: "auth/token-missing",
+              },
+              config: originalRequest,
+            },
+          })
         }
 
         const res = await axios.post<Token>(
@@ -75,13 +106,18 @@ authApi.interceptors.response.use(
         localStorage.setItem("accessToken", accessToken)
         localStorage.setItem("refreshToken", newRefreshToken)
 
-        api.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`
+        authApi.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${accessToken}`
         originalRequest.headers["Authorization"] = `Bearer ${accessToken}`
 
         processQueue(null, accessToken)
         return authApi(originalRequest)
       } catch (err) {
         processQueue(err)
+        localStorage.removeItem("accessToken")
+        localStorage.removeItem("refreshToken")
+        window.location.href = "/auth"
         return Promise.reject(err)
       } finally {
         isRefreshing = false

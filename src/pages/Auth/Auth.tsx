@@ -1,12 +1,18 @@
 import { useDispatch } from "react-redux"
 import { useState } from "react"
-import { Button, Checkbox, Form, Input, Modal } from "antd"
+import { Button, Checkbox, Form, Input, Modal, FormInstance } from "antd"
 import { useNavigate } from "react-router-dom"
 import authApi from "../../api/apiToken"
 import { login } from "../../redux/authSlice"
 import { AuthData, UserRegistration } from "../../types/auth"
+import { getReadableErrorMessage } from "../../utils/getReadableErrorMessage"
 import illustration from "../../../public/illustration.jpg"
 import styles from "./Auth.module.css"
+
+interface HandleLetterChangeParams {
+  e: React.ChangeEvent<HTMLInputElement>
+  setFieldValue: FormInstance["setFieldsValue"]
+}
 
 const formItemLayout = {
   labelCol: {
@@ -77,12 +83,31 @@ const Auth = () => {
         setIsModalVisible(true)
       }
     } catch (error) {
-      alert(error + "Authentication failed")
+      const message = getReadableErrorMessage(error)
+      alert(message)
     }
   }
 
   const handleOk = () => {
     setIsModalVisible(false)
+  }
+
+  const handleLetterChange = ({
+    e,
+    setFieldValue,
+  }: HandleLetterChangeParams) => {
+    const { name, value } = e.target
+    const onlyLetters = value.replace(/[^a-zA-Zа-яА-ЯёЁ]/g, "")
+    setFieldValue({ [name]: onlyLetters })
+  }
+
+  const handleLatinChange = ({
+    e,
+    setFieldValue,
+  }: HandleLetterChangeParams) => {
+    const { name, value } = e.target
+    const onlyLetters = value.replace(/[^a-zA-Z]/g, "")
+    setFieldValue({ [name]: onlyLetters })
   }
 
   return (
@@ -130,9 +155,21 @@ const Auth = () => {
                     message: "Текст должен содержать больше 1 символа.",
                   },
                   { max: 60, message: "Текст должен быть короче 60 символов." },
+                  {
+                    pattern: /^[a-zA-Zа-яА-ЯёЁ]+$/,
+                    message:
+                      "Логин может содержать только буквы (латинские или кириллические)",
+                  },
                 ]}
               >
-                <Input />
+                <Input
+                  onChange={(e) =>
+                    handleLetterChange({
+                      e,
+                      setFieldValue: form.setFieldsValue,
+                    })
+                  }
+                />
               </Form.Item>
 
               <Form.Item
@@ -162,9 +199,20 @@ const Auth = () => {
                 message: "Login должен содержать больше 2-х символов.",
               },
               { max: 60, message: "Login должен быть короче 60 символов." },
+              {
+                pattern: /^[a-zA-Z]+$/,
+                message: "Логин может содержать только буквы (латинские буквы)",
+              },
             ]}
           >
-            <Input />
+            <Input
+              onChange={(e) =>
+                handleLatinChange({
+                  e,
+                  setFieldValue: form.setFieldsValue,
+                })
+              }
+            />
           </Form.Item>
 
           <Form.Item
@@ -213,6 +261,10 @@ const Auth = () => {
                 rules={[
                   {
                     message: "Please input your phone number!",
+                  },
+                  {
+                    pattern: /^\+\d{7,}$/,
+                    message: "Телефон должен начинаться с + и содержать не менее 7 цифр",
                   },
                 ]}
               >

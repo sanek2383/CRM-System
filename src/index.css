@@ -70,6 +70,12 @@ button:focus-visible {
   text-align: start;
 }
 
+.ant-form-item-explain-error{
+  position: absolute;
+    z-index: 1000;
+    background-color: white;
+}
+
 @media (min-width: 576px) {
     :where(.css-dev-only-do-not-override-1v5z42l).ant-col-sm-offset-8 {
         margin-inline-start: 0;
