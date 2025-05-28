@@ -14,27 +14,28 @@ function App() {
   const dispatch = useDispatch()
   const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    const restoreSession = async () => {
+useEffect(() => {
+  const restoreSession = async () => {
+    try {
+      const res = await authApi.get<Profile>("/user/profile")
       const token = localStorage.getItem("accessToken")
-      if (!token) {
-        setIsLoading(false)
-        return
+
+      if (!token) {       
+        console.warn("Профиль получен, но токена нет.")
+        return dispatch(logout())
       }
 
-      try {
-        const res = await authApi.get<Profile>("/user/profile")
-        dispatch(restoreAuthSuccess({ token, user: res.data }))
-      } catch (err) {
-        console.error("Не удалось восстановить сессию", err)
-        dispatch(logout())
-      } finally {
-        setIsLoading(false)
-      }
+      dispatch(restoreAuthSuccess({ token, user: res.data }))
+    } catch (err) {
+      console.error("Не удалось восстановить сессию:", err)
+      dispatch(logout())
+    } finally {
+      setIsLoading(false)
     }
+  }
 
-    restoreSession()
-  }, [dispatch])
+  restoreSession()
+}, [dispatch])
 
   if (isLoading) {
     return <div>Загрузка...</div>

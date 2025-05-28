@@ -1,7 +1,6 @@
 import axios from "axios"
 import { AxiosError } from "axios"
 import { Token } from "../types/auth"
-// import { api } from "./axiosInstance"
 
 type FailedQueueItem = {
   reject: (error: unknown) => void
@@ -12,7 +11,7 @@ const authApi = axios.create({
   baseURL: "https://easydev.club/api/v1",
 })
 
-// Добавляю токен перед каждым запросом
+
 authApi.interceptors.request.use((config) => {
   const token = localStorage.getItem("accessToken")
   if (token) {
@@ -21,7 +20,7 @@ authApi.interceptors.request.use((config) => {
   return config
 })
 
-// Обработка истекшего токена
+
 let isRefreshing = false
 let failedQueue: FailedQueueItem[] = []
 
