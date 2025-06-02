@@ -75,7 +75,13 @@ const Auth = () => {
           localStorage.removeItem("user")
         }
 
-        dispatch(login({ token: accessToken, user }))
+        dispatch(
+          login({
+            token: response.data.accessToken,
+            user: response.data.user,
+            refreshToken: response.data.refreshToken,
+          })
+        )
         navigate("/")
       } else {
         setIsRegister(false)
@@ -264,7 +270,8 @@ const Auth = () => {
                   },
                   {
                     pattern: /^\+\d{7,}$/,
-                    message: "Телефон должен начинаться с + и содержать не менее 7 цифр",
+                    message:
+                      "Телефон должен начинаться с + и содержать не менее 7 цифр",
                   },
                 ]}
               >
