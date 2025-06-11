@@ -5,8 +5,7 @@
 }
 
 aside {
-  position: absolute;
-  top: 2rem;
-  left: 2rem;
+  margin: 2rem;
   text-align: start;
+  width: 15rem;
 }

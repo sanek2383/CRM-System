@@ -63,95 +63,102 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div style={{ maxWidth: 700, margin: "40px auto", padding: "20px" }}>
-      <Card
-        variant="outlined"
-        styles={{
-          body: {
-            padding: "24px",
-          },
-        }}
-        style={{
-          borderRadius: 16,
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-          transition: "box-shadow 0.3s ease",
-        }}
-      >
-        <div style={{ textAlign: "center", marginBottom: "24px" }}>
-          <Avatar
-            size={80}
-            icon={<UserOutlined />}
-            style={{ backgroundColor: "#1890ff", fontSize: "24px" }}
-          />
-          <Title
-            level={3}
-            style={{ marginTop: 16 }}
-          >
-            {user.username}
-          </Title>
-          <Tag
-            color="blue"
-            style={{ fontSize: "12px" }}
-          >
-            {user.roles.join(", ")}
-          </Tag>
-          <p style={{ color: "#666", marginTop: 8 }}>
-            <MailOutlined /> {user.email}
-          </p>
-        </div>
+		<div style={{ maxWidth: 700, margin: '40px auto', padding: '20px' }}>
+			<Card
+				variant='outlined'
+				styles={{
+					body: {
+						padding: '2rem',
+					},
+				}}
+				style={{
+					width: '40rem',
+					zIndex: 1,
+					borderRadius: 16,
+					boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+					transition: 'box-shadow 0.3s ease',
+				}}
+			>
+				<div style={{ textAlign: 'center', marginBottom: '24px' }}>
+					<Avatar
+						size={80}
+						icon={<UserOutlined />}
+						style={{ backgroundColor: '#1890ff', fontSize: '24px' }}
+					/>
+					<Title
+						level={3}
+						style={{ marginTop: 16 }}
+					>
+						{user.username}
+					</Title>
+					<div style={{ marginTop: 8 }}>
+						{user.roles.map(role => (
+							<Tag
+								key={role}
+								color='blue'
+								style={{ fontSize: '12px', marginBottom: 8 }}
+							>
+								{role}
+							</Tag>
+						))}
+					</div>
+					<p style={{ color: '#666', marginTop: 8 }}>
+						<MailOutlined /> {user.email}
+					</p>
+				</div>
 
-        <Divider />
+				<Divider />
 
-        <Descriptions
-          layout="vertical"
-          items={[
-            {
-              key: "id",
-              label: "ID",
-              children: user.id,
-            },
-            {
-              key: "date",
-              label: "Дата регистрации",
-              children: new Date(user.date).toLocaleDateString(),
-            },
-            {
-              key: "phone",
-              label: "Номер телефона",
-              children: user.phoneNumber || (
-                <span style={{ color: "#aaa" }}>Не указан</span>
-              ),
-            },
-            {
-              key: "status",
-              label: "Статус",
-              children: user.isBlocked ? (
-                <Tag
-                  icon={<LockOutlined />}
-                  color="error"
-                >
-                  Заблокирован
-                </Tag>
-              ) : (
-                <Tag
-                  icon={<ClockCircleOutlined />}
-                  color="success"
-                >
-                  Активен
-                </Tag>
-              ),
-            },
-          ]}
-          styles={{
-            label: {
-              fontWeight: 600,
-              width: 150,
-            },
-          }}
-        />
-      </Card>
-    </div>
-  )
+				<Descriptions
+					layout='vertical'
+					items={[
+						{
+							key: 'id',
+							label: 'ID',
+							children: user.id,
+						},
+						{
+							key: 'date',
+							label: 'Дата регистрации',
+							children: new Date(user.date).toLocaleDateString(),
+						},
+						{
+							key: 'phone',
+							label: 'Номер телефона',
+							children: user.phoneNumber || (
+								<span style={{ color: '#aaa' }}>Не указан</span>
+							),
+						},
+						{
+							key: 'status',
+							label: 'Статус',
+							children: user.isBlocked ? (
+								<Tag
+									icon={<LockOutlined />}
+									color='error'
+								>
+									Заблокирован
+								</Tag>
+							) : (
+								<Tag
+									icon={<ClockCircleOutlined />}
+									color='success'
+								>
+									Активен
+								</Tag>
+							),
+						},
+					]}
+					styles={{
+						label: {
+							fontWeight: 600,
+							width: 150,
+						},
+					}}
+				/>
+			</Card>
+		</div>
+	)
 }
 
 export default ProfilePage

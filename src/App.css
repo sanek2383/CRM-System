@@ -1,5 +1,6 @@
 #root {
   text-align: center;
+  display: flex;
 }
 
 body{

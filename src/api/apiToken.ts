@@ -1,137 +1,103 @@
-import axios from "axios"
-import { Token } from "../types/auth"
-
-type FailedQueueItem = {
-  reject: (error: unknown) => void
-  resolve: (token: string | null) => void
-}
+import axios from 'axios'
+import { store } from '../redux/store'
+import { Token } from '../types/auth'
+import { logout as reduxLogout } from '../redux/sessionSlice'
 
 const authApi = axios.create({
-  baseURL: "https://easydev.club/api/v1",
+	baseURL: 'https://easydev.club/api/v1',
 })
 
-authApi.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken")
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-  return config
-})
+let currentAccessToken: string | null = null
 
-let isRefreshing = false
-let failedQueue: FailedQueueItem[] = []
-
-const processQueue = (error: unknown | null, token: string | null = null) => {
-  failedQueue.forEach((prom) => {
-    if (error) {
-      prom.reject(error)
-    } else {
-      prom.resolve(token)
-    }
-  })
-  failedQueue = []
+const updateAuthHeader = (token: string | null) => {
+	if (token) {
+		authApi.defaults.headers.common['Authorization'] = `Bearer ${token}`
+	} else {
+		delete authApi.defaults.headers.common['Authorization']
+	}
 }
 
+export const setAccessToken = (token: string | null) => {
+	currentAccessToken = token
+	updateAuthHeader(token)
+}
+
+authApi.interceptors.request.use(config => {
+	if (currentAccessToken) {
+		config.headers.Authorization = `Bearer ${currentAccessToken}`
+	}
+	return config
+})
+
 authApi.interceptors.response.use(
-  (response) => {
-    console.log("Успешный ответ:", response)
-    return response
-  },
-  async (error) => {
-    console.log("Ответ с ошибкой:", error?.response?.status, error?.config?.url)
-    const originalRequest = error.config
+	response => {
+		console.log('Response:', response)
+		return response
+	},
+	async error => {
+		console.log('Response error:', error.response)
+		const originalRequest = error.config
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      console.log("Попытка рефреша токена")
+		if (error.response?.status === 401 && !originalRequest._retry) {
+			const refreshToken = localStorage.getItem('refreshToken')
 
-      const refreshToken = localStorage.getItem("refreshToken")
+			if (!refreshToken) {
+				store.dispatch(reduxLogout())
+				return Promise.reject({ ...error, _handledByInterceptor: true })
+			}
 
-      if (!refreshToken) {
-        console.warn("Отсутствует refreshToken — выходим из системы")
+			try {
+				const res = await axios.post<Token>(
+					'https://easydev.club/api/v1/auth/refresh',
+					{ refreshToken }
+				)
 
-        localStorage.removeItem("accessToken")
-        localStorage.removeItem("refreshToken")
-        localStorage.removeItem("user")
+				const { accessToken, refreshToken: newRefreshToken } = res.data
 
-        return Promise.reject({ ...error, _handledByInterceptor: true })
-      }
+				updateAuthHeader(accessToken)
+				setAccessToken(accessToken)
+				localStorage.setItem('refreshToken', newRefreshToken)
 
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject })
-        })
-          .then((token) => {
-            originalRequest.headers["Authorization"] = `Bearer ${token}`
-            return authApi(originalRequest)
-          })
-          .catch((err) => Promise.reject(err))
-      }
+				originalRequest.headers['Authorization'] = `Bearer ${accessToken}`
+				originalRequest._retry = true
 
-      originalRequest._retry = true
-      isRefreshing = true
+				return authApi(originalRequest)
+			} catch (err) {
+				console.error('Не удалось обновить токен, выходим из системы', err)
+				localStorage.removeItem('refreshToken')
+				store.dispatch(reduxLogout())
+				return Promise.reject({ err })
+			}
+		}
 
-      try {
-        const res = await axios.post<Token>(
-          "https://easydev.club/api/v1/auth/refresh",
-          { refreshToken }
-        )
-
-        const { accessToken, refreshToken: newRefreshToken } = res.data
-
-        localStorage.setItem("accessToken", accessToken)
-        localStorage.setItem("refreshToken", newRefreshToken)
-
-        authApi.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${accessToken}`
-        originalRequest.headers["Authorization"] = `Bearer ${accessToken}`
-
-        processQueue(null, accessToken)
-        return authApi(originalRequest)
-      } catch (err) {
-        console.error("Не удалось обновить токен, выходим из системы")
-
-        processQueue(err)
-
-        localStorage.removeItem("accessToken")
-        localStorage.removeItem("refreshToken")
-        localStorage.removeItem("user")
-
-        return Promise.reject({ ...error, _handledByInterceptor: true })
-      } finally {
-        isRefreshing = false
-      }
-    }
-
-    return Promise.reject(error)
-  }
+		return Promise.reject(error)
+	}
 )
 
 export const logout = async () => {
-  const token = localStorage.getItem("accessToken")
+	const token = currentAccessToken
 
-  if (!token) {
-    console.warn("Токен отсутствует — пользователь уже вышел")
-    return Promise.resolve()
-  }
+	if (!token) {
+		console.warn('Токен отсутствует — пользователь уже вышел')
+		return Promise.resolve()
+	}
 
-  try {
-    await axios.post(
-      "https://easydev.club/api/v1/user/logout",
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-  } catch (error) {
-    console.error("Ошибка выхода:", error)
-  } finally {
-    localStorage.removeItem("accessToken")
-    localStorage.removeItem("refreshToken")
-    localStorage.removeItem("user")
-  }
+	try {
+		await axios.post(
+			'https://easydev.club/api/v1/user/logout',
+			{},
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		)
+	} catch (error) {
+		console.error('Ошибка выхода:', error)
+	} finally {
+		localStorage.removeItem('refreshToken')
+		store.dispatch(reduxLogout())
+	}
 }
 
 export default authApi
