@@ -8,6 +8,8 @@ import { RootState } from './redux/store'
 import { useRestoreSession } from './utils/useRestoreSession'
 import LoginPage from './pages/Auth/LoginPage'
 import RegisterPage from './pages/Auth/RegisterPage'
+import AdminUserListPage from './pages/Admin/AdminUserListPage'
+
 
 function App() {
 	useRestoreSession()
@@ -29,6 +31,10 @@ function App() {
 					<Route
 						path='userProfile'
 						element={<ProfilePage />}
+					/>
+					<Route
+						path='admin/users'
+						element={<AdminUserListPage />}
 					/>
 				</Route>
 				<Route

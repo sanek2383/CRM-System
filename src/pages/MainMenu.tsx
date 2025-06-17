@@ -12,32 +12,23 @@ import { Button, Menu } from 'antd'
 import styles from './TodoListPage/TodoListPage.module.css'
 import { RootState } from '../redux/store'
 import LogoutButton from '../components/LogoutButton/LogoutButton'
+import { selectUser } from '../redux/sessionSlice'
+
 
 type MenuItem = Required<MenuProps>['items'][number]
 
-const items: MenuItem[] = [
-	{
-		key: '1',
-		icon: <ContainerOutlined />,
-		label: <NavLink to='/'>Список задач</NavLink>,
-	},
-	{
-		key: '2',
-		icon: <PieChartOutlined />,
-		label: <NavLink to='/userProfile'>Профиль</NavLink>,
-	},
-	{
-		key: 'logout',
-		label: <LogoutButton />,
-		style: { marginTop: 'auto' },
-	},
-]
-
 const MainMenu = () => {
-	const { isAuthenticated } = useSelector((state: RootState) => state.auth)
+	const { isAuthenticated, isLoading } = useSelector(
+		(state: RootState) => state.auth
+	)
 	const [collapsed, setCollapsed] = useState(false)
 	const [selectedKey, setSelectedKey] = useState('1')
 	const location = useLocation()
+	const user = useSelector(selectUser)
+
+
+	const isAdminOrMod =
+		user?.roles?.includes('ADMIN') || user?.roles?.includes('MODERATOR')
 
 	const toggleCollapsed = () => {
 		setCollapsed(!collapsed)
@@ -50,18 +41,50 @@ const MainMenu = () => {
 
 		if (currentPath === '/') activeKey = '1'
 		else if (currentPath === '/userProfile') activeKey = '2'
-		else if (currentPath === '/auth/login') activeKey = '3'
+		else if (currentPath.startsWith('/admin/users')) activeKey = '3'
 
 		setSelectedKey(activeKey)
-	}, [location.pathname])
+	}, [location.pathname, user])
+
+	if (isLoading) return <div>Загрузка...</div>
 
 	if (!isAuthenticated) return null
+
+	const items: MenuItem[] = [
+		{
+			key: '1',
+			icon: <ContainerOutlined />,
+			label: <NavLink to='/'>Список задач</NavLink>,
+		},
+		{
+			key: '2',
+			icon: <PieChartOutlined />,
+			label: <NavLink to='/userProfile'>Профиль</NavLink>,
+		},
+		...(isAdminOrMod
+			? [
+					{
+						key: '3',
+						icon: <ContainerOutlined />,
+						label: <NavLink to='/admin/users'>Пользователи</NavLink>,
+					},
+			  ]
+			: []),
+		{
+			key: 'logout',
+			label: <LogoutButton />,
+			style: { marginTop: 'auto' },
+		},
+	]
+
+	console.log('user:', user)
+	console.log('isAdminOrMod:', isAdminOrMod)
 
 	return (
 		<>
 			<aside
 				className={styles.aside}
-				style={{zIndex: 999 }}
+				style={{ zIndex: 999 }}
 			>
 				<Button
 					type='primary'
@@ -83,4 +106,4 @@ const MainMenu = () => {
 	)
 }
 
-export default MainMenu 
+export default MainMenu
