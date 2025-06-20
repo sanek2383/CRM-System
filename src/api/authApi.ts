@@ -54,7 +54,6 @@ authApi.interceptors.response.use(
 
 				const { accessToken, refreshToken: newRefreshToken } = res.data
 
-				updateAuthHeader(accessToken)
 				setAccessToken(accessToken)
 				localStorage.setItem('refreshToken', newRefreshToken)
 

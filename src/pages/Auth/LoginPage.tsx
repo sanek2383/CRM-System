@@ -2,7 +2,7 @@ import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { AxiosError } from 'axios'
 import { Form, Input, Button, Checkbox } from 'antd'
-import authApi, { setAccessToken } from '../../api/apiToken'
+import authApi, { setAccessToken } from '../../api/authApi'
 import { login } from '../../redux/sessionSlice'
 import { AuthData } from '../../types/auth'
 import illustration from '../../../public/illustration.jpg'
@@ -12,7 +12,6 @@ interface ErrorResponseData {
 	code?: string
 	message?: string
 }
-
 
 const tailFormItemLayout = {
 	wrapperCol: {
@@ -29,7 +28,6 @@ const LoginPage = () => {
 	function isAxiosError(error: unknown): error is AxiosError {
 		return typeof error === 'object' && error !== null && 'response' in error
 	}
-
 
 	function getReadableErrorMessage(error: unknown): string {
 		if (isAxiosError(error)) {
@@ -83,16 +81,17 @@ const LoginPage = () => {
 
 		return 'Произошла неизвестная ошибка. Попробуйте позже.'
 	}
-	
-	
 
 	const onFinish = async (values: AuthData) => {
 		try {
 			const response = await authApi.post('/auth/signin', values)
 
-			const { accessToken, refreshToken, user } = response.data
+			const { accessToken, refreshToken } = response.data
 
 			localStorage.setItem('refreshToken', refreshToken)
+
+			const profileRes = await authApi.get('/user/profile')
+			const user = profileRes.data
 
 			dispatch(login({ token: accessToken, refreshToken, user }))
 			setAccessToken(accessToken)
@@ -100,7 +99,6 @@ const LoginPage = () => {
 		} catch (error) {
 			console.error('Ошибка входа:', error)
 			if (error instanceof AxiosError) {
-				console.error('Axios error response:', error.response)
 				console.error('Axios error response data:', error.response?.data)
 			}
 			alert(getReadableErrorMessage(error))

@@ -1,15 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Table, Input, Button, Tag, Space, Popconfirm, message } from 'antd'
+import { Table, Input, Button, Tag, Space, Popconfirm, message, Modal, Checkbox, Radio } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import {
-	EyeOutlined,
 	EditOutlined,
 	DeleteOutlined,
 	LockOutlined,
 	UnlockOutlined,
 } from '@ant-design/icons'
-import adminApi from '../../api/apiToken'
-import { User } from '../../types/admin'
+import authApi from '../../api/authApi'
+import { Roles, User } from '../../types/admin'
 import { useNavigate } from 'react-router-dom'
 
 const AdminUserListPage: React.FC = () => {
@@ -18,20 +17,43 @@ const AdminUserListPage: React.FC = () => {
 	const [search, setSearch] = useState('')
 	const [total, setTotal] = useState(0)
 	const [page, setPage] = useState(1)
+	const [selectedUser, setSelectedUser] = useState<User | null>(null)
+	const [roleModalOpen, setRoleModalOpen] = useState(false)
+	const [selectedRoles, setSelectedRoles] = useState<Roles[]>([])
+	const [sortBy, setSortBy] = useState<string | undefined>(undefined)
+	const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | undefined>(
+		undefined
+	)
+	const [blockFilter, setBlockFilter] = useState<'all' | 'blocked' | 'active'>(
+		'all'
+	)
+
 
 	const navigate = useNavigate()
 	const pageSize = 10
 
+
 	const fetchUsers = useCallback(async () => {
 		setLoading(true)
 		try {
-			const res = await adminApi.get('/admin/users', {
+			const isBlocked =
+				blockFilter === 'blocked'
+					? true
+					: blockFilter === 'active'
+					? false
+					: undefined
+
+			const res = await authApi.get('/admin/users', {
 				params: {
 					search,
 					offset: (page - 1) * pageSize,
 					limit: pageSize,
+					sortBy,
+					sortOrder,
+					isBlocked,
 				},
 			})
+
 			setUsers(res.data.data)
 			setTotal(res.data.meta.totalAmount)
 		} catch (error) {
@@ -39,7 +61,8 @@ const AdminUserListPage: React.FC = () => {
 		} finally {
 			setLoading(false)
 		}
-	}, [page, search])
+	}, [page, search, sortBy, sortOrder, blockFilter])
+	
 
 	useEffect(() => {
 		fetchUsers()
@@ -50,7 +73,7 @@ const AdminUserListPage: React.FC = () => {
 			const url = `/admin/users/${user.id}/${
 				user.isBlocked ? 'unblock' : 'block'
 			}`
-			await adminApi.post(url)
+			await authApi.post(url)
 			message.success(
 				`Пользователь ${user.isBlocked ? 'разблокирован' : 'заблокирован'}`
 			)
@@ -62,7 +85,7 @@ const AdminUserListPage: React.FC = () => {
 
 	const handleDelete = async (id: number) => {
 		try {
-			await adminApi.delete(`/admin/users/${id}`)
+			await authApi.delete(`/admin/users/${id}`)
 			message.success('Пользователь удалён')
 			fetchUsers()
 		} catch {
@@ -70,15 +93,56 @@ const AdminUserListPage: React.FC = () => {
 		}
 	}
 
+	const openRoleModal = (user: User) => {
+		setSelectedUser(user)
+		setSelectedRoles(user.roles)
+		setRoleModalOpen(true)
+	}
+
+	const handleUpdateRoles = async () => {
+		if (!selectedUser) return
+
+		if (selectedRoles.length === 0) {
+			message.warning('У пользователя должна быть хотя бы одна роль')
+			return
+		}
+
+		try {
+			await authApi.post(`/admin/users/${selectedUser.id}/rights`, {
+				roles: selectedRoles,
+			})
+			message.success('Роли обновлены')
+			setRoleModalOpen(false)
+			fetchUsers()
+		} catch {
+			message.error('Ошибка при обновлении ролей')
+		}
+	}
+	
+	
+
 	const columns: ColumnsType<User> = [
 		{
 			title: 'Имя',
 			dataIndex: 'username',
 			sorter: true,
+			sortOrder:
+				sortBy === 'username'
+					? sortOrder === 'asc'
+						? 'ascend'
+						: 'descend'
+					: undefined,
 		},
 		{
 			title: 'Email',
 			dataIndex: 'email',
+			sorter: true,
+			sortOrder:
+				sortBy === 'email'
+					? sortOrder === 'asc'
+						? 'ascend'
+						: 'descend'
+					: undefined,
 		},
 		{
 			title: 'Телефон',
@@ -120,14 +184,13 @@ const AdminUserListPage: React.FC = () => {
 			key: 'actions',
 			render: (_, user) => (
 				<Space>
-					<Button
-						icon={<EyeOutlined />}
-						onClick={() => navigate(`/admin/users/${user.id}`)}
-					/>
+					<Button onClick={() => openRoleModal(user)}>Изменить роли</Button>
 					<Button
 						icon={<EditOutlined />}
 						onClick={() => navigate(`/admin/users/${user.id}/edit`)}
-					/>
+					>
+						Перейти к профилю
+					</Button>
 					<Button
 						icon={user.isBlocked ? <LockOutlined /> : <UnlockOutlined />}
 						onClick={() => handleBlockToggle(user)}
@@ -149,15 +212,28 @@ const AdminUserListPage: React.FC = () => {
 	]
 
 	return (
-		<div style={{ padding: 24 }}>
+		<div style={{ padding: 24, width: '70%' }}>
 			<h1>Пользователи</h1>
 			<Input.Search
 				placeholder='Поиск по email или имени'
 				value={search}
 				onChange={e => setSearch(e.target.value)}
 				onSearch={() => setPage(1)}
-				style={{ marginBottom: 16, maxWidth: 400 }}
+				style={{ marginBottom: 16,marginRight:20, maxWidth: 400 }}
 			/>
+			<Radio.Group
+				value={blockFilter}
+				onChange={e => {
+					setBlockFilter(e.target.value)
+					setPage(1)
+				}}
+				style={{ marginBottom: 16 }}
+			>
+				<Radio.Button value='all'>Все</Radio.Button>
+				<Radio.Button value='blocked'>Заблокированные</Radio.Button>
+				<Radio.Button value='active'>Активные</Radio.Button>
+			</Radio.Group>
+
 			<Table
 				columns={columns}
 				dataSource={users}
@@ -169,9 +245,33 @@ const AdminUserListPage: React.FC = () => {
 					current: page,
 					onChange: p => setPage(p),
 				}}
+				onChange={(_pagination, _filters, sorter) => {
+					if (!Array.isArray(sorter) && sorter.order) {
+						setSortBy(sorter.field as string)
+						setSortOrder(sorter.order === 'ascend' ? 'asc' : 'desc')
+					} else {
+						setSortBy(undefined)
+						setSortOrder(undefined)
+					}
+				}}
 			/>
+			<Modal
+				title={`Изменение ролей: ${selectedUser?.username}`}
+				open={roleModalOpen}
+				onCancel={() => setRoleModalOpen(false)}
+				onOk={handleUpdateRoles}
+				okText='Сохранить'
+				cancelText='Отмена'
+			>
+				<Checkbox.Group
+					options={Object.values(Roles)}
+					value={selectedRoles}
+					onChange={checked => setSelectedRoles(checked as Roles[])}
+				/>
+			</Modal>
 		</div>
 	)
 }
 
 export default AdminUserListPage
+

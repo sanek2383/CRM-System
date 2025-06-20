@@ -9,6 +9,7 @@ import { useRestoreSession } from './utils/useRestoreSession'
 import LoginPage from './pages/Auth/LoginPage'
 import RegisterPage from './pages/Auth/RegisterPage'
 import AdminUserListPage from './pages/Admin/AdminUserListPage'
+import AdminUserEditPage from './pages/Admin/AdminUserEditPage'
 
 
 function App() {
@@ -35,6 +36,10 @@ function App() {
 					<Route
 						path='admin/users'
 						element={<AdminUserListPage />}
+					/>
+					<Route
+						path='admin/users/:id/edit'
+						element={<AdminUserEditPage />}
 					/>
 				</Route>
 				<Route

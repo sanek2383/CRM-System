@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Button, message } from 'antd'
 import { LogoutOutlined } from '@ant-design/icons'
 import { logout as reduxLogout } from '../../redux/sessionSlice'
-import { logout as apiLogout } from '../../api/apiToken'
+import { logout as apiLogout } from '../../api/authApi'
 import { useDispatch } from 'react-redux'
 
 const LogoutButton: React.FC = () => {
@@ -33,7 +33,7 @@ const LogoutButton: React.FC = () => {
 			style={{ width: '100%' }}
 			loading={loading}
 		>
-			Выйти
+			<span style={{ fontSize:'1rem' }}>Выйти</span>
 		</Button>
 	)
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Form, Input, Button, Checkbox, Modal, FormInstance } from 'antd'
-import authApi from '../../api/apiToken'
+import authApi from '../../api/authApi'
 import { UserRegistration } from '../../types/auth'
 import illustration from '../../../public/illustration.jpg'
 import styles from './Auth.module.css'
