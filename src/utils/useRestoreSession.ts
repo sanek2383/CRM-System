@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import authApi from '../api/apiToken'
+import authApi from '../api/authApi'
 import {
 	restoreAuthSuccess,
 	logout,

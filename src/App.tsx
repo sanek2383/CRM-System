@@ -6,8 +6,10 @@ import PrivateRoute from './pages/Auth/PrivateRoute'
 import { useSelector } from 'react-redux'
 import { RootState } from './redux/store'
 import { useRestoreSession } from './utils/useRestoreSession'
-import LoginPage from './pages/Auth/LoginPage'
-import RegisterPage from './pages/Auth/RegisterPage'
+import AppLayout from './components/AppLayout/AppLayout'
+import AuthPage from './pages/Auth/AuthPage'
+import LoginForm from './components/LoginForm/LoginForm'
+import RegisterForm from './components/RegisterForm/RegisterForm'
 
 function App() {
 	useRestoreSession()
@@ -22,23 +24,31 @@ function App() {
 		<BrowserRouter>
 			<Routes>
 				<Route element={<PrivateRoute />}>
+					<Route element={<AppLayout />}>
+						<Route
+							index
+							element={<TodoListPage />}
+						/>
+						<Route
+							path='userProfile'
+							element={<ProfilePage />}
+						/>
+					</Route>
+				</Route>
+
+				<Route
+					path='auth'
+					element={<AuthPage />}
+				>
 					<Route
-						index
-						element={<TodoListPage />}
+						path='login'
+						element={<LoginForm />}
 					/>
 					<Route
-						path='userProfile'
-						element={<ProfilePage />}
+						path='register'
+						element={<RegisterForm />}
 					/>
 				</Route>
-				<Route
-					path='auth/login'
-					element={<LoginPage />}
-				/>
-				<Route
-					path='auth/register'
-					element={<RegisterPage />}
-				/>
 				<Route
 					path='*'
 					element={

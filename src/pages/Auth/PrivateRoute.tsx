@@ -1,33 +1,21 @@
 import { Navigate, Outlet } from 'react-router-dom'
-import {  useSelector } from "react-redux"
-import { RootState } from "../../redux/store"
-import MainMenu from '../MainMenu'
-
-
-
+import { useSelector } from 'react-redux'
+import { RootState } from '../../redux/store'
 
 const PrivateRoute = () => {
+	const { isAuthenticated, isLoading } = useSelector(
+		(state: RootState) => state.auth
+	)
 
-  const { isAuthenticated, isLoading } = useSelector(
-    (state: RootState) => state.auth
-  )
+	if (isAuthenticated === null || isLoading) return <div>Загрузка...</div>
 
-  if (isAuthenticated === null || isLoading) return <div>Загрузка...</div>
-
-  if (!isAuthenticated) {
-    return (
-			<Navigate
-				to='auth/login'
-				replace
-			/>
-		)
-  }
-
-  return (
-		<>
-			<MainMenu />
-			<Outlet />
-		</>
+	return isAuthenticated ? (
+		<Outlet />
+	) : (
+		<Navigate
+			to='/auth/login'
+			replace
+		/>
 	)
 }
 

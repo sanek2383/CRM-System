@@ -2,17 +2,15 @@ import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { AxiosError } from 'axios'
 import { Form, Input, Button, Checkbox } from 'antd'
-import authApi, { setAccessToken } from '../../api/apiToken'
+import authApi, { setAccessToken } from '../../api/authApi'
 import { login } from '../../redux/sessionSlice'
 import { AuthData } from '../../types/auth'
-import illustration from '../../../public/illustration.jpg'
-import styles from './Auth.module.css'
+import styles from '../../pages/Auth/Auth.module.css'
 
 interface ErrorResponseData {
 	code?: string
 	message?: string
 }
-
 
 const tailFormItemLayout = {
 	wrapperCol: {
@@ -21,7 +19,7 @@ const tailFormItemLayout = {
 	},
 }
 
-const LoginPage = () => {
+const LoginForm: React.FC = () => {
 	const dispatch = useDispatch()
 	const [form] = Form.useForm()
 	const navigate = useNavigate()
@@ -29,7 +27,6 @@ const LoginPage = () => {
 	function isAxiosError(error: unknown): error is AxiosError {
 		return typeof error === 'object' && error !== null && 'response' in error
 	}
-
 
 	function getReadableErrorMessage(error: unknown): string {
 		if (isAxiosError(error)) {
@@ -83,8 +80,6 @@ const LoginPage = () => {
 
 		return 'Произошла неизвестная ошибка. Попробуйте позже.'
 	}
-	
-	
 
 	const onFinish = async (values: AuthData) => {
 		try {
@@ -106,96 +101,82 @@ const LoginPage = () => {
 			alert(getReadableErrorMessage(error))
 		}
 	}
-
 	return (
-		<div className={styles.authorizationContainer}>
-			<div className={styles.imageAuthorization}>
-				<img
-					src={illustration}
-					alt='illustration'
-				/>
+		<>
+			<div className={styles.formAuthorizationTitle}>
+				<h1>Login to your Account</h1>
+				<p>See what is going on with your business</p>
 			</div>
-			<div className={styles.formAuthorization}>
-				<div className={styles.formAuthorizationTitle}>
-					<h1>Login to your Account</h1>
-					<p>See what is going on with your business</p>
-				</div>
 
-				<Form
-					form={form}
+			<Form
+				form={form}
+				name='login'
+				onFinish={onFinish}
+				layout='horizontal'
+				style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}
+			>
+				<Form.Item
 					name='login'
-					onFinish={onFinish}
-					layout='horizontal'
-					style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}
+					label='Login'
+					rules={[
+						{
+							required: true,
+							message: 'Please input your nickname!',
+							whitespace: true,
+						},
+						{
+							min: 2,
+							message: 'Login должен содержать больше 2-х символов.',
+						},
+						{ max: 60, message: 'Login должен быть короче 60 символов.' },
+						{
+							pattern: /^[a-zA-Z]+$/,
+							message: 'Логин может содержать только буквы (латинские)',
+						},
+					]}
 				>
-					<Form.Item
-						name='login'
-						label='Login'
-						rules={[
-							{
-								required: true,
-								message: 'Please input your nickname!',
-								whitespace: true,
-							},
-							{
-								min: 2,
-								message: 'Login должен содержать больше 2-х символов.',
-							},
-							{ max: 60, message: 'Login должен быть короче 60 символов.' },
-							{
-								pattern: /^[a-zA-Z]+$/,
-								message: 'Логин может содержать только буквы (латинские)',
-							},
-						]}
-					>
-						<Input />
-					</Form.Item>
+					<Input />
+				</Form.Item>
 
-					<Form.Item
-						name='password'
-						label='Password'
-						rules={[
-							{ required: true, message: 'Please input your password!' },
-							{ min: 6, message: 'Пароль должен содержать больше 6 символов.' },
-							{ max: 60, message: 'Пароль должен быть короче 60 символов.' },
-						]}
-						hasFeedback
-					>
-						<Input.Password />
-					</Form.Item>
+				<Form.Item
+					name='password'
+					label='Password'
+					rules={[
+						{ required: true, message: 'Please input your password!' },
+						{ min: 6, message: 'Пароль должен содержать больше 6 символов.' },
+						{ max: 60, message: 'Пароль должен быть короче 60 символов.' },
+					]}
+					hasFeedback
+				>
+					<Input.Password />
+				</Form.Item>
 
-					<Form.Item
-						{...tailFormItemLayout}
-						name='remember'
-						valuePropName='checked'
-						style={{ marginTop: 50 }}
-					>
-						<Checkbox>Remember me</Checkbox>
-					</Form.Item>
+				<Form.Item
+					{...tailFormItemLayout}
+					name='remember'
+					valuePropName='checked'
+					style={{ marginTop: 50 }}
+				>
+					<Checkbox>Remember me</Checkbox>
+				</Form.Item>
 
-					<Form.Item {...tailFormItemLayout}>
-						<Button
-							type='primary'
-							htmlType='submit'
-							style={{ marginTop: 20 }}
-						>
-							Login
-						</Button>
-					</Form.Item>
-				</Form>
-
-				<div style={{ textAlign: 'center', marginTop: 16 }}>
-					Not Registered Yet?{' '}
-					<Link
-						to='/auth/register'
-						style={{ color: '#1890ff', textDecoration: 'underline' }}
+				<Form.Item {...tailFormItemLayout}>
+					<Button
+						type='primary'
+						htmlType='submit'
+						style={{ marginTop: 20 }}
 					>
-						Create an account
-					</Link>
-				</div>
+						Login
+					</Button>
+				</Form.Item>
+			</Form>
+
+			<div style={{ textAlign: 'center', marginTop: 16, cursor: 'pointer' }}>
+				Not registered yet?
+				<Link to='/auth/register'> Create an account</Link>
 			</div>
-		</div>
+		</>
 	)
 }
 
-export default LoginPage
+export default LoginForm

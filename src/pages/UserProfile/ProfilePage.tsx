@@ -1,68 +1,68 @@
-import { useEffect, useState } from "react"
-import { Navigate } from "react-router-dom"
+import { useEffect, useState } from 'react'
+import { Navigate } from 'react-router-dom'
 import {
-  Card,
-  Descriptions,
-  Spin,
-  Typography,
-  Avatar,
-  Tag,
-  Divider,
-} from "antd"
+	Card,
+	Descriptions,
+	Spin,
+	Typography,
+	Avatar,
+	Tag,
+	Divider,
+} from 'antd'
 import {
-  UserOutlined,
-  MailOutlined,
-  ClockCircleOutlined,
-  LockOutlined,
-} from "@ant-design/icons"
-import authApi from "../../api/apiToken"
-import { Profile } from "../../types/auth"
+	UserOutlined,
+	MailOutlined,
+	ClockCircleOutlined,
+	LockOutlined,
+} from '@ant-design/icons'
+import authApi from '../../api/authApi'
+import { Profile } from '../../types/auth'
 
 const { Title } = Typography
 
 const fetchUserProfile = async (): Promise<Profile> => {
-  const response = await authApi.get("/user/profile")
-  return response.data
+	const response = await authApi.get('/user/profile')
+	return response.data
 }
 
 const ProfilePage: React.FC = () => {
-  const [user, setUser] = useState<Profile | null>(null)
-  const [loading, setLoading] = useState(true)
+	const [user, setUser] = useState<Profile | null>(null)
+	const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const data = await fetchUserProfile()
-        setUser(data)
-      } catch (err) {
-        console.error("Ошибка загрузки профиля", err)
-      } finally {
-        setLoading(false)
-      }
-    }
+	useEffect(() => {
+		const loadProfile = async () => {
+			try {
+				const data = await fetchUserProfile()
+				setUser(data)
+			} catch (err) {
+				console.error('Ошибка загрузки профиля', err)
+			} finally {
+				setLoading(false)
+			}
+		}
 
-    loadProfile()
-  }, [])
+		loadProfile()
+	}, [])
 
-  if (loading) {
-    return (
-      <Spin
-        size="large"
-        style={{ display: "block", margin: "40px auto" }}
-      />
-    )
-  }
+	if (loading) {
+		return (
+			<Spin
+				size='large'
+				style={{ display: 'block', margin: '40px auto' }}
+			/>
+		)
+	}
 
-  if (!user) {
-    return (
-      <Navigate
-        to="/login"
-        replace
-      />
-    )
-  }
+	if (!user) {
+		return (
+			<Navigate
+				to='/login'
+				replace
+			/>
+		)
+	}
 
-  return (
+	return (
 		<div style={{ maxWidth: 700, margin: '40px auto', padding: '20px' }}>
 			<Card
 				variant='outlined'
