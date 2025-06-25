@@ -46,7 +46,6 @@ const sessionSlice = createSlice({
 			state.user = null
 			state.isLoading = false
 			state.isRestoring = false
-			console.log('[authSlice] Удаляем refreshToken из localStorage')
 			localStorage.removeItem('refreshToken')
 		},
 		restoreAuthSuccess(state, action: PayloadAction<{ user: Profile }>) {

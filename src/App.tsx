@@ -6,8 +6,10 @@ import PrivateRoute from './pages/Auth/PrivateRoute'
 import { useSelector } from 'react-redux'
 import { RootState } from './redux/store'
 import { useRestoreSession } from './utils/useRestoreSession'
-import LoginPage from './pages/Auth/LoginPage'
-import RegisterPage from './pages/Auth/RegisterPage'
+import AppLayout from './components/AppLayout/AppLayout'
+import AuthPage from './pages/Auth/AuthPage'
+import LoginForm from './components/LoginForm/LoginForm'
+import RegisterForm from './components/RegisterForm/RegisterForm'
 import AdminUserListPage from './pages/Admin/AdminUserListPage'
 import AdminUserEditPage from './pages/Admin/AdminUserEditPage'
 
@@ -25,14 +27,15 @@ function App() {
 		<BrowserRouter>
 			<Routes>
 				<Route element={<PrivateRoute />}>
-					<Route
-						index
-						element={<TodoListPage />}
-					/>
-					<Route
-						path='userProfile'
-						element={<ProfilePage />}
-					/>
+					<Route element={<AppLayout />}>
+						<Route
+							index
+							element={<TodoListPage />}
+						/>
+						<Route
+							path='userProfile'
+							element={<ProfilePage />}
+						/>
 					<Route
 						path='admin/users'
 						element={<AdminUserListPage />}
@@ -41,15 +44,22 @@ function App() {
 						path='admin/users/:id/edit'
 						element={<AdminUserEditPage />}
 					/>
+					</Route>
 				</Route>
+
 				<Route
-					path='auth/login'
-					element={<LoginPage />}
-				/>
-				<Route
-					path='auth/register'
-					element={<RegisterPage />}
-				/>
+					path='auth'
+					element={<AuthPage />}
+				>
+					<Route
+						path='login'
+						element={<LoginForm />}
+					/>
+					<Route
+						path='register'
+						element={<RegisterForm />}
+					/>
+				</Route>
 				<Route
 					path='*'
 					element={

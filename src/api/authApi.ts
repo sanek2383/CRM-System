@@ -2,40 +2,25 @@ import axios from 'axios'
 import { store } from '../redux/store'
 import { Token } from '../types/auth'
 import { logout as reduxLogout } from '../redux/sessionSlice'
+import { tokenStorage } from '../utils/TokenStorage'
 
 const authApi = axios.create({
 	baseURL: 'https://easydev.club/api/v1',
 })
 
-let currentAccessToken: string | null = null
-
-const updateAuthHeader = (token: string | null) => {
-	if (token) {
-		authApi.defaults.headers.common['Authorization'] = `Bearer ${token}`
-	} else {
-		delete authApi.defaults.headers.common['Authorization']
-	}
-}
-
-export const setAccessToken = (token: string | null) => {
-	currentAccessToken = token
-	updateAuthHeader(token)
-}
-
 authApi.interceptors.request.use(config => {
-	if (currentAccessToken) {
-		config.headers.Authorization = `Bearer ${currentAccessToken}`
+	const token = tokenStorage.get()
+	if (token) {
+		config.headers.Authorization = `Bearer ${token}`
 	}
 	return config
 })
 
 authApi.interceptors.response.use(
 	response => {
-		console.log('Response:', response)
 		return response
 	},
 	async error => {
-		console.log('Response error:', error.response)
 		const originalRequest = error.config
 
 		if (error.response?.status === 401 && !originalRequest._retry) {
@@ -54,7 +39,7 @@ authApi.interceptors.response.use(
 
 				const { accessToken, refreshToken: newRefreshToken } = res.data
 
-				setAccessToken(accessToken)
+				tokenStorage.set(accessToken)
 				localStorage.setItem('refreshToken', newRefreshToken)
 
 				originalRequest.headers['Authorization'] = `Bearer ${accessToken}`
@@ -73,8 +58,12 @@ authApi.interceptors.response.use(
 	}
 )
 
+export const setAccessToken = (token: string | null) => {
+	tokenStorage.set(token)
+}
+
 export const logout = async () => {
-	const token = currentAccessToken
+	const token = tokenStorage.get()
 
 	if (!token) {
 		console.warn('Токен отсутствует — пользователь уже вышел')
