@@ -14,7 +14,6 @@ import { RootState } from '../redux/store'
 import LogoutButton from '../components/LogoutButton/LogoutButton'
 import { selectUser } from '../redux/sessionSlice'
 
-
 type MenuItem = Required<MenuProps>['items'][number]
 
 const MainMenu = () => {
@@ -25,7 +24,6 @@ const MainMenu = () => {
 	const [selectedKey, setSelectedKey] = useState('1')
 	const location = useLocation()
 	const user = useSelector(selectUser)
-
 
 	const isAdminOrMod =
 		user?.roles?.includes('ADMIN') || user?.roles?.includes('MODERATOR')
@@ -76,9 +74,6 @@ const MainMenu = () => {
 			style: { marginTop: 'auto' },
 		},
 	]
-
-	console.log('user:', user)
-	console.log('isAdminOrMod:', isAdminOrMod)
 
 	return (
 		<>

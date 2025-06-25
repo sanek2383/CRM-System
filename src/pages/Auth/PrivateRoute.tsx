@@ -1,7 +1,6 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../redux/store'
-import MainMenu from '../MainMenu'
 
 const PrivateRoute = () => {
 	const { isAuthenticated, isLoading, user } = useSelector(
@@ -15,7 +14,7 @@ const PrivateRoute = () => {
 	if (!isAuthenticated) {
 		return (
 			<Navigate
-				to='auth/login'
+				to='/auth/login'
 				replace
 			/>
 		)
@@ -37,31 +36,16 @@ const PrivateRoute = () => {
 			/>
 		)
 	}
+	return <Outlet />
 
-	return (
-		<>
-			<MainMenu />
-			<Outlet />
-		</>
-// import { Navigate, Outlet } from 'react-router-dom'
-// import { useSelector } from 'react-redux'
-// import { RootState } from '../../redux/store'
-
-// const PrivateRoute = () => {
-// 	const { isAuthenticated, isLoading } = useSelector(
-// 		(state: RootState) => state.auth
-// 	)
-
-// 	if (isAuthenticated === null || isLoading) return <div>Загрузка...</div>
-
-// 	return isAuthenticated ? (
-// 		<Outlet />
-// 	) : (
-// 		<Navigate
-// 			to='/auth/login'
-// 			replace
-// 		/>
-	)
+	// return isAuthenticated ? (
+	// 	<Outlet />
+	// ) : (
+	// 	<Navigate
+	// 		to='/auth/login'
+	// 		replace
+	// 	/>
+	// )
 }
 
 export default PrivateRoute

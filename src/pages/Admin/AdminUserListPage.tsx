@@ -212,7 +212,7 @@ const AdminUserListPage: React.FC = () => {
 	]
 
 	return (
-		<div style={{ padding: 24, width: '70%' }}>
+		<div style={{ padding: 24, width: '70%', marginInline: 'auto' }}>
 			<h1>Пользователи</h1>
 			<Input.Search
 				placeholder='Поиск по email или имени'
