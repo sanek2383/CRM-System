@@ -1,6 +1,6 @@
 import { Button, Form, Input, Space } from "antd"
 import { useState } from "react"
-import { createFetchTodos } from "../api/apiTodo.ts"
+import { createFetchTodos } from "../../api/apiTodo.ts"
 import styles from "./FormTodo.module.css"
 
 interface FormTodoProps {
@@ -36,17 +36,18 @@ const FormTodo: React.FC<FormTodoProps> = ({ reloadTodos }) => {
   return (
     <>
       <Form
+      className="form-todo"
         {...layout}
         form={form}
         name="control-hooks"
         onFinish={onSubmitHandler}
-        style={{ maxWidth: 600 }}
+        style={{ maxWidth: 600, display: 'flex', marginBottom: 20, justifyContent:'center' }}
       >
         <Form.Item
           name="note"
           rules={[
             { required: true, message: "Введите задачу" },
-            { min: 3, message: "Текст должен содержать больше 2 символов." },
+            { min: 2, message: "Текст должен содержать больше 2 символов." },
             { max: 64, message: "Текст должен быть короче 64 символов." },
           ]}
         >

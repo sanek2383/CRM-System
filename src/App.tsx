@@ -1,27 +1,66 @@
-import { BrowserRouter, Routes, Route } from "react-router"
-
-import "./App.css"
-import TodoListPage from "./pages/TodoListPage.tsx"
-import TodoNavigationPage from "./pages/TodoNavigationPage.tsx"
-import UserProfile from "./pages/UserProfile.tsx"
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import './App.css'
+import TodoListPage from './pages/TodoListPage/TodoListPage'
+import ProfilePage from './pages/UserProfile/ProfilePage'
+import PrivateRoute from './pages/Auth/PrivateRoute'
+import { useSelector } from 'react-redux'
+import { RootState } from './redux/store'
+import { useRestoreSession } from './utils/useRestoreSession'
+import AppLayout from './components/AppLayout/AppLayout'
+import AuthPage from './pages/Auth/AuthPage'
+import LoginForm from './components/LoginForm/LoginForm'
+import RegisterForm from './components/RegisterForm/RegisterForm'
 
 function App() {
+	useRestoreSession()
 
-  return (
-    <BrowserRouter>
-        <TodoNavigationPage/>
-      <Routes>
-        <Route
-          index
-          element={<TodoListPage />}
-        />
-        <Route
-          path="userProfile"
-          element={<UserProfile />}
-        />
-      </Routes>
-    </BrowserRouter>
-  )
+	const { isLoading } = useSelector((state: RootState) => state.auth)
+
+	if (isLoading) {
+		return <div>Загрузка приложения...</div>
+	}
+
+	return (
+		<BrowserRouter>
+			<Routes>
+				<Route element={<PrivateRoute />}>
+					<Route element={<AppLayout />}>
+						<Route
+							index
+							element={<TodoListPage />}
+						/>
+						<Route
+							path='userProfile'
+							element={<ProfilePage />}
+						/>
+					</Route>
+				</Route>
+
+				<Route
+					path='auth'
+					element={<AuthPage />}
+				>
+					<Route
+						path='login'
+						element={<LoginForm />}
+					/>
+					<Route
+						path='register'
+						element={<RegisterForm />}
+					/>
+				</Route>
+				<Route
+					path='*'
+					element={
+						<Navigate
+							to='/'
+							replace
+						/>
+					}
+				/>
+			</Routes>
+		</BrowserRouter>
+	)
 }
 
 export default App

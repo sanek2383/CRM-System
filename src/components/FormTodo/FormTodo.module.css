@@ -1,4 +1,4 @@
-form {
+form .form-todo {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -28,10 +28,11 @@ button {
   height: 2rem;
   font-size: 1.25rem!important;
   border-bottom: 1px solid #040404;
-  background-color: #c1bbbb!important;
+  background-color: #ffffff!important;
 }
 
 
 input:focus {
   outline: none;
 }
+

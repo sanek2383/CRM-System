@@ -5,7 +5,7 @@
 
   color-scheme: light;
   color: #1d1d1dde;
-  background-color: #c1bbbb;
+  background-color: #FFFFFF;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -22,12 +22,6 @@ a:hover {
   color: #535bf2;
 }
 
-body {
-  margin-top: 10rem;
-  display: flex;
-  min-width: 20rem;
-  min-height: 100vh;
-}
 
 h1 {
   font-size: 3.2em;
@@ -64,4 +58,26 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+/* custom antd */
+
+.ant-row.ant-form-item-row.css-dev-only-do-not-override-1v5z42l{
+  flex-direction: column;
+  text-align: start;
+}
+.ant-col.ant-form-item-label.css-dev-only-do-not-override-1v5z42l{
+  text-align: start;
+}
+
+.ant-form-item-explain-error{
+  position: absolute;
+    z-index: 1000;
+    background-color: white;
+}
+
+@media (min-width: 576px) {
+    :where(.css-dev-only-do-not-override-1v5z42l).ant-col-sm-offset-8 {
+        margin-inline-start: 0;
+    }
 }

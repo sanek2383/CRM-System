@@ -1,5 +1,5 @@
 import { Button } from "antd"
-import { FilterTodoChoice } from "../types/todo"
+import { FilterTodoChoice } from "../../types/todo"
 import styles from "./FilterTodo.module.css"
 
 interface TodoStats {
@@ -18,7 +18,6 @@ const FilterTodo = ({ todoStats, filter, setFilter }: FilterTodoProps) => {
 
   return (
     <div className={styles.filterButton}>
-      
       <Button
         type="primary"
         htmlType="submit"
@@ -36,7 +35,7 @@ const FilterTodo = ({ todoStats, filter, setFilter }: FilterTodoProps) => {
       >
         В работе ({inWork})
       </Button>
-      
+
       <Button
         type="primary"
         htmlType="submit"

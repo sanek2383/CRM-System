@@ -1,0 +1,11 @@
+.todoBlock {
+  width: 50%;
+  margin-inline: auto;
+  padding-top: 10rem;
+}
+
+aside {
+  margin: 2rem;
+  text-align: start;
+  width: 15rem;
+}
