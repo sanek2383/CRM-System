@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons'
 import authApi from '../../api/authApi'
 import { Roles, User } from '../../types/admin'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const AdminUserListPage: React.FC = () => {
 	const [users, setUsers] = useState<User[]>([])
@@ -27,9 +27,10 @@ const AdminUserListPage: React.FC = () => {
 	const [blockFilter, setBlockFilter] = useState<'all' | 'blocked' | 'active'>(
 		'all'
 	)
-
-
+	const location = useLocation()
+	
 	const navigate = useNavigate()
+
 	const pageSize = 10
 
 
@@ -119,7 +120,23 @@ const AdminUserListPage: React.FC = () => {
 		}
 	}
 	
-	
+	useEffect(() => {
+		if (location.state) {
+			const state = location.state as {
+				search?: string
+				page?: number
+				blockFilter?: 'all' | 'blocked' | 'active'
+				sortBy?: string
+				sortOrder?: 'asc' | 'desc'
+			}
+			if (state.search !== undefined) setSearch(state.search)
+			if (state.page !== undefined) setPage(state.page)
+			if (state.blockFilter !== undefined) setBlockFilter(state.blockFilter)
+			if (state.sortBy !== undefined) setSortBy(state.sortBy)
+			if (state.sortOrder !== undefined) setSortOrder(state.sortOrder)
+		}
+	}, [])
+
 
 	const columns: ColumnsType<User> = [
 		{
@@ -187,10 +204,21 @@ const AdminUserListPage: React.FC = () => {
 					<Button onClick={() => openRoleModal(user)}>Изменить роли</Button>
 					<Button
 						icon={<EditOutlined />}
-						onClick={() => navigate(`/admin/users/${user.id}/edit`)}
+						onClick={() =>
+							navigate(`/admin/users/${user.id}/edit`, {
+								state: {
+									search,
+									page,
+									blockFilter,
+									sortBy,
+									sortOrder,
+								},
+							})
+						}
 					>
 						Перейти к профилю
 					</Button>
+
 					<Button
 						icon={user.isBlocked ? <LockOutlined /> : <UnlockOutlined />}
 						onClick={() => handleBlockToggle(user)}

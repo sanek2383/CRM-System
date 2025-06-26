@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { Form, Input, Button, message, Tag } from 'antd'
 import authApi from '../../api/authApi'
 import { User, UserRequest, Roles } from '../../types/admin'
@@ -10,6 +10,17 @@ const AdminUserEditPage: React.FC = () => {
 	const [form] = Form.useForm()
 	const [loading, setLoading] = useState(false)
 	const [user, setUser] = useState<User | null>(null)
+	const location = useLocation()
+
+	const previousState = location.state as
+		| {
+				search?: string
+				page?: number
+				blockFilter?: string
+				sortBy?: string
+				sortOrder?: string
+		  }
+		| undefined
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -68,7 +79,7 @@ const AdminUserEditPage: React.FC = () => {
 	if (!user) return null
 
 	return (
-		<div style={{ padding: 24, maxWidth: 600 }}>
+		<div style={{ padding: 24, maxWidth: 600, marginInline: 'auto' }}>
 			<h1>Редактирование пользователя</h1>
 			<Form
 				form={form}
@@ -145,9 +156,13 @@ const AdminUserEditPage: React.FC = () => {
 					</Button>
 					<Button
 						style={{ marginLeft: 8 }}
-						onClick={() => navigate(-1)}
+						onClick={() =>
+							navigate('/admin/users', {
+								state: previousState, 
+							})
+						}
 					>
-						Отмена
+						Вернуться
 					</Button>
 				</Form.Item>
 			</Form>
