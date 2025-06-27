@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
 import authReducer from './sessionSlice'
+import adminUserTableReducer from './adminUserTableSlice'
 
 export const store = configureStore({
 	reducer: {
 		auth: authReducer,
+		adminUserTable: adminUserTableReducer,
 	},
 })
 

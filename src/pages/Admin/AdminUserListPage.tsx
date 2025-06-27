@@ -1,5 +1,17 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Table, Input, Button, Tag, Space, Popconfirm, message, Modal, Checkbox, Radio } from 'antd'
+import { useSelector, useDispatch } from 'react-redux'
+import {
+	Table,
+	Input,
+	Button,
+	Tag,
+	Space,
+	Popconfirm,
+	message,
+	Modal,
+	Checkbox,
+	Radio,
+} from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import {
 	EditOutlined,
@@ -9,30 +21,26 @@ import {
 } from '@ant-design/icons'
 import authApi from '../../api/authApi'
 import { Roles, User } from '../../types/admin'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
+import { RootState } from '../../redux/store'
+import { setFilters } from '../../redux/adminUserTableSlice'
 
 const AdminUserListPage: React.FC = () => {
 	const [users, setUsers] = useState<User[]>([])
 	const [loading, setLoading] = useState(false)
-	const [search, setSearch] = useState('')
 	const [total, setTotal] = useState(0)
-	const [page, setPage] = useState(1)
 	const [selectedUser, setSelectedUser] = useState<User | null>(null)
 	const [roleModalOpen, setRoleModalOpen] = useState(false)
 	const [selectedRoles, setSelectedRoles] = useState<Roles[]>([])
-	const [sortBy, setSortBy] = useState<string | undefined>(undefined)
-	const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | undefined>(
-		undefined
+	const [searchParams, setSearchParams] = useSearchParams()
+	const dispatch = useDispatch()
+	const { search, page, blockFilter, sortBy, sortOrder } = useSelector(
+		(state: RootState) => state.adminUserTable
 	)
-	const [blockFilter, setBlockFilter] = useState<'all' | 'blocked' | 'active'>(
-		'all'
-	)
-	const location = useLocation()
-	
+
 	const navigate = useNavigate()
 
 	const pageSize = 10
-
 
 	const fetchUsers = useCallback(async () => {
 		setLoading(true)
@@ -63,7 +71,6 @@ const AdminUserListPage: React.FC = () => {
 			setLoading(false)
 		}
 	}, [page, search, sortBy, sortOrder, blockFilter])
-	
 
 	useEffect(() => {
 		fetchUsers()
@@ -119,24 +126,30 @@ const AdminUserListPage: React.FC = () => {
 			message.error('Ошибка при обновлении ролей')
 		}
 	}
-	
-	useEffect(() => {
-		if (location.state) {
-			const state = location.state as {
-				search?: string
-				page?: number
-				blockFilter?: 'all' | 'blocked' | 'active'
-				sortBy?: string
-				sortOrder?: 'asc' | 'desc'
-			}
-			if (state.search !== undefined) setSearch(state.search)
-			if (state.page !== undefined) setPage(state.page)
-			if (state.blockFilter !== undefined) setBlockFilter(state.blockFilter)
-			if (state.sortBy !== undefined) setSortBy(state.sortBy)
-			if (state.sortOrder !== undefined) setSortOrder(state.sortOrder)
-		}
-	}, [])
 
+	useEffect(() => {
+		const current = Object.fromEntries(searchParams.entries())
+		const next = {
+			search,
+			page: String(page),
+			blockFilter,
+			sortBy: sortBy ?? '',
+			sortOrder: sortOrder ?? '',
+		}
+
+		if (JSON.stringify(current) !== JSON.stringify(next)) {
+			setSearchParams(next)
+		}
+	}, [
+		search,
+		page,
+		blockFilter,
+		sortBy,
+		sortOrder,
+		searchParams,
+		setSearchParams,
+	])
+	
 
 	const columns: ColumnsType<User> = [
 		{
@@ -245,15 +258,16 @@ const AdminUserListPage: React.FC = () => {
 			<Input.Search
 				placeholder='Поиск по email или имени'
 				value={search}
-				onChange={e => setSearch(e.target.value)}
-				onSearch={() => setPage(1)}
-				style={{ marginBottom: 16,marginRight:20, maxWidth: 400 }}
+				onChange={e => dispatch(setFilters({ search: e.target.value }))}
+				onSearch={() => {
+					dispatch(setFilters({ page: 1 }))
+				}}
+				style={{ marginBottom: 16, marginRight: 20, maxWidth: 400 }}
 			/>
 			<Radio.Group
 				value={blockFilter}
 				onChange={e => {
-					setBlockFilter(e.target.value)
-					setPage(1)
+					dispatch(setFilters({ blockFilter: e.target.value, page: 1 }))
 				}}
 				style={{ marginBottom: 16 }}
 			>
@@ -271,15 +285,23 @@ const AdminUserListPage: React.FC = () => {
 					total,
 					pageSize,
 					current: page,
-					onChange: p => setPage(p),
+					onChange: p => dispatch(setFilters({ page: p })),
 				}}
 				onChange={(_pagination, _filters, sorter) => {
 					if (!Array.isArray(sorter) && sorter.order) {
-						setSortBy(sorter.field as string)
-						setSortOrder(sorter.order === 'ascend' ? 'asc' : 'desc')
+						dispatch(
+							setFilters({
+								sortBy: sorter.field as string,
+								sortOrder: sorter.order === 'ascend' ? 'asc' : 'desc',
+							})
+						)
 					} else {
-						setSortBy(undefined)
-						setSortOrder(undefined)
+						dispatch(
+							setFilters({
+								sortBy: undefined,
+								sortOrder: undefined,
+							})
+						)
 					}
 				}}
 			/>
@@ -302,4 +324,3 @@ const AdminUserListPage: React.FC = () => {
 }
 
 export default AdminUserListPage
-
