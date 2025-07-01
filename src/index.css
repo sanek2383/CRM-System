@@ -81,3 +81,7 @@ button:focus-visible {
         margin-inline-start: 0;
     }
 }
+
+.ant-pagination-options{
+  display: none!important;
+}

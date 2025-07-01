@@ -33,7 +33,7 @@ const LogoutButton: React.FC = () => {
 			style={{ width: '100%' }}
 			loading={loading}
 		>
-			Выйти
+			<span style={{ fontSize:'1rem' }}>Выйти</span>
 		</Button>
 	)
 }

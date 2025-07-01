@@ -85,9 +85,12 @@ const LoginForm: React.FC = () => {
 		try {
 			const response = await authApi.post('/auth/signin', values)
 
-			const { accessToken, refreshToken, user } = response.data
+			const { accessToken, refreshToken } = response.data
 
 			localStorage.setItem('refreshToken', refreshToken)
+
+			const profileRes = await authApi.get('/user/profile')
+			const user = profileRes.data
 
 			dispatch(login({ token: accessToken, refreshToken, user }))
 			setAccessToken(accessToken)
@@ -95,7 +98,6 @@ const LoginForm: React.FC = () => {
 		} catch (error) {
 			console.error('Ошибка входа:', error)
 			if (error instanceof AxiosError) {
-				console.error('Axios error response:', error.response)
 				console.error('Axios error response data:', error.response?.data)
 			}
 			alert(getReadableErrorMessage(error))

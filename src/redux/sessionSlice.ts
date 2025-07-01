@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Profile } from '../types/auth'
+import { RootState } from '../redux/store'
 
 
 export interface AuthState {
@@ -64,3 +65,5 @@ export const { login, logout, restoreAuthSuccess, startRestore, finishRestore } 
 	sessionSlice.actions
 
 export default sessionSlice.reducer
+
+export const selectUser = (state: RootState) => state.auth.user

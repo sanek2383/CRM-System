@@ -10,6 +10,9 @@ import AppLayout from './components/AppLayout/AppLayout'
 import AuthPage from './pages/Auth/AuthPage'
 import LoginForm from './components/LoginForm/LoginForm'
 import RegisterForm from './components/RegisterForm/RegisterForm'
+import AdminUserListPage from './pages/Admin/AdminUserListPage'
+import AdminUserEditPage from './pages/Admin/AdminUserEditPage'
+
 
 function App() {
 	useRestoreSession()
@@ -33,6 +36,14 @@ function App() {
 							path='userProfile'
 							element={<ProfilePage />}
 						/>
+					<Route
+						path='admin/users'
+						element={<AdminUserListPage />}
+					/>
+					<Route
+						path='admin/users/:id/edit'
+						element={<AdminUserEditPage />}
+					/>
 					</Route>
 				</Route>
 
